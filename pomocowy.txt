@@ -1,0 +1,33 @@
+
+login
+piotr
+hasło typowe
+
+http://localhost:8000/admin/
+py manage.py runserver
+
+http://127.0.0.1:8000/civil_calc/1/
+
+https://medium.com/swlh/build-your-first-rest-api-with-django-rest-framework-e394e39a482c
+
+https://dev.to/nobleobioma/create-a-simple-rest-api-with-django-253p
+
+
+{
+    "first_number": 1,
+    "second_number": 2
+}
+
+od Lesia:
+
+https://dev.to/brian101co/how-to-return-a-json-response-in-django-gen
+
+https://medium.com/swlh/create-a-calculator-using-django-d2d5573dfe61
+
+py -m venv moje_virtualne_srodowisko_nr1
+py -m venv pynite_venv1
+
+AKTYWACJA: moje_virtualne_srodowisko_nr1\Scripts\Activate
+pynite_venv1\Scripts\Activate
+
+DEAKTYWACJA: deactivate
