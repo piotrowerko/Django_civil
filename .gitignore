@@ -119,6 +119,7 @@ virt_env_pio1/
 dj_venv1/
 dj_venv2/
 
+
 # Spyder project settings
 .spyderproject
 .spyproject

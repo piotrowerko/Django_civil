@@ -1,6 +1,8 @@
+pip install python-dotenv
+pip install django
+pip install djangorestframework
 
-login
-piotr
+login imię
 hasło typowe
 
 http://localhost:8000/admin/
@@ -31,3 +33,6 @@ AKTYWACJA: moje_virtualne_srodowisko_nr1\Scripts\Activate
 pynite_venv1\Scripts\Activate
 
 DEAKTYWACJA: deactivate
+
+UWAGA SECRET KEY:
+https://stackoverflow.com/questions/15209978/where-to-store-secret-keys-django
