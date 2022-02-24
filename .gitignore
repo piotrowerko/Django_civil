@@ -117,6 +117,7 @@ venv_signal_aspekt/
 .venv_signal_aspekt
 virt_env_pio1/
 dj_venv1/
+dj_venv2/
 
 # Spyder project settings
 .spyderproject
