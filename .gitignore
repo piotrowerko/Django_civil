@@ -62,6 +62,7 @@ django_civil/settings.py
 secr_key.py
 db.sqlite3
 db.sqlite3-journal
+*.sqlite3
 
 # Flask stuff:
 instance/
