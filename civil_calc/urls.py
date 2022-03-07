@@ -17,6 +17,7 @@ from django.urls import include, path
 from . import views
 
 urlpatterns = [
+  path('', views.welcome),
   path('welcome', views.welcome),
   path('sum_data', views.sum_data),
   path('comp_data', views.comp_data),
