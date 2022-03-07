@@ -129,3 +129,11 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# Moje ustawienia:
+LOGIN_URL = 'users:heroku'
+
+# Ustawienia Heroku:
+import django_heroku
+django_heroku.settings(locals())

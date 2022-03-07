@@ -36,3 +36,6 @@ DEAKTYWACJA: deactivate
 
 UWAGA SECRET KEY:
 https://stackoverflow.com/questions/15209978/where-to-store-secret-keys-django
+
+utworzenie requairements:
+pip freeze > requirements.txt
