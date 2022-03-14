@@ -39,3 +39,7 @@ https://stackoverflow.com/questions/15209978/where-to-store-secret-keys-django
 
 utworzenie requairements:
 pip freeze > requirements.txt
+
+git push heroku HEAD:master
+
+https://www.geeksforgeeks.org/how-to-enable-cors-headers-in-your-django-project/
