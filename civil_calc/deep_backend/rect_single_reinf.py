@@ -23,7 +23,7 @@ class RectCrSectSingle():
         return f'{self.name}'
 
     #def _load_concrete(self, file_path='civil_calc\\deep_backend\\concrete_ec.csv'):
-    def _load_concrete(self, file_path='civil_calc\\deep_backend\\concrete_ec.csv'): #  'C:\\Python\\git_projects\\civil_calc\\deep_backend\\concrete_ec.csv'
+    def _load_concrete(self, file_path='civil_calc/deep_backend/concrete_ec.csv'): #  'C:\\Python\\git_projects\\civil_calc\\deep_backend\\concrete_ec.csv'
         #with open(os.path.join(os.path.dirname(os.getcwd()), file_path)) as fp: 
         with open(file_path) as fp:
             reader = csv.reader(fp, delimiter=";", quotechar='"')
@@ -33,7 +33,7 @@ class RectCrSectSingle():
     
     def _get_fcd_eta(self):
         """returns f_cd * eta value according to EC"""
-        conc_data = self._load_concrete(file_path='civil_calc\\deep_backend\\concrete_ec.csv')  # C:\Python\git_projects\Django_civil\civil_calc\deep_backend
+        conc_data = self._load_concrete(file_path='civil_calc/deep_backend/concrete_ec.csv')  # C:\Python\git_projects\Django_civil\civil_calc\deep_backend
         conc_class_names = [el[0] for el in conc_data]
         class_ind = conc_class_names.index(self.cl_conc)
         fck = float(conc_data[class_ind][1])
