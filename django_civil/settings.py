@@ -63,7 +63,7 @@ MIDDLEWARE = [
 CORS_ORIGIN_ALLOW_ALL = False
 CORS_ORIGIN_WHITELIST = (
   'http://localhost:8000',
-  'https://compassionate-pasteur-020efe.netlify.app/',
+  'https://compassionate-pasteur-020efe.netlify.app',
 )
 
 ROOT_URLCONF = 'django_civil.urls'
