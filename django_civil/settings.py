@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'civil_calc',
     # dodatkowe aplikacje django:
     'rest_framework',
+    'corsheaders',
     #  domyślne aplikacje django:
     'django.contrib.admin',
     'django.contrib.auth',
@@ -45,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
 ]
 
 MIDDLEWARE = [
@@ -55,7 +57,14 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
+
+CORS_ORIGIN_ALLOW_ALL = False
+CORS_ORIGIN_WHITELIST = (
+  'http://localhost:8000',
+  'https://compassionate-pasteur-020efe.netlify.app/',
+)
 
 ROOT_URLCONF = 'django_civil.urls'
 

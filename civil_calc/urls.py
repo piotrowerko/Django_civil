@@ -21,4 +21,5 @@ urlpatterns = [
   path('welcome', views.welcome),
   path('sum_data', views.sum_data),
   path('comp_data', views.comp_data),
+  path('rect_sing_reinf', views.rect_reinf)
 ]
