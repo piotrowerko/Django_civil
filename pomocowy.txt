@@ -48,3 +48,5 @@ https://www.geeksforgeeks.org/how-to-enable-cors-headers-in-your-django-project/
 
 frontend and backend on one dyno/app in heroku:
 https://stackoverflow.com/questions/36504768/deploy-the-backend-and-frontend-on-the-same-heroku-app-dyno
+
+heroku config:set DISABLE_COLLECTSTATIC=1
