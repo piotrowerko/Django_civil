@@ -149,11 +149,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Moje ustawienia:
 LOGIN_URL = 'users:heroku'
 
- # Ustawienia Heroku:
-import django_heroku
-django_heroku.settings(locals())
+#  # Ustawienia Heroku:
+# import django_heroku
+# django_heroku.settings(locals())
 
-if os.environ.get('DEBUG') == 'TRUE':
-    DEBUG = True
-elif os.environ.get('DEBUG') == 'FALSE':
-    DEBUG = False
+# if os.environ.get('DEBUG') == 'TRUE':
+#     DEBUG = True
+# elif os.environ.get('DEBUG') == 'FALSE':
+#     DEBUG = False
