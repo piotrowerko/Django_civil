@@ -28,11 +28,12 @@ SECRET_KEY = os.environ['SECRET_KEY']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# ALLOWED_HOSTS = ['https://django-civil-85.herokuapp.com/rect_sing_reinf',
-#                  'django-civil-85.herokuapp.com',
-#                  'django-civil-85.herokuapp.com/comp_data',
-#                  '127.0.0.1',]
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['django-civil-85.herokuapp.com/rect_sing_reinf',
+                 'django-civil-85.herokuapp.com',
+                 'django-civil-85.herokuapp.com/comp_data',
+                 '127.0.0.1',
+                 'django-civil-85.herokuapp.com/welcome']
+# ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -148,11 +149,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Moje ustawienia:
 LOGIN_URL = 'users:heroku'
 
-#  # Ustawienia Heroku:
-# import django_heroku
-# django_heroku.settings(locals())
+ # Ustawienia Heroku:
+import django_heroku
+django_heroku.settings(locals())
 
-# if os.environ.get('DEBUG') == 'TRUE':
-#     DEBUG = True
-# elif os.environ.get('DEBUG') == 'FALSE':
-#     DEBUG = False
+if os.environ.get('DEBUG') == 'TRUE':
+    DEBUG = True
+elif os.environ.get('DEBUG') == 'FALSE':
+    DEBUG = False
