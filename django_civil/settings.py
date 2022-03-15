@@ -28,12 +28,12 @@ SECRET_KEY = os.environ['SECRET_KEY']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['django-civil-85.herokuapp.com/rect_sing_reinf',
-                 'django-civil-85.herokuapp.com',
-                 'django-civil-85.herokuapp.com/comp_data',
-                 '127.0.0.1',
-                 'django-civil-85.herokuapp.com/welcome',]
-# ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = ['django-civil-85.herokuapp.com/rect_sing_reinf',
+#                  'django-civil-85.herokuapp.com',
+#                  'django-civil-85.herokuapp.com/comp_data',
+#                  '127.0.0.1',
+#                  'django-civil-85.herokuapp.com/welcome',]
+ALLOWED_HOSTS = []
 
 
 # Application definition
