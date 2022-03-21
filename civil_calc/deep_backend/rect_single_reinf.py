@@ -82,7 +82,7 @@ class RectCrSectSingle():
             print("reinforcement is NOT fully used; sigma_s < f_yd")
             ksi_eff = self.cl_steel_data[3]  # = ksi_eff_lim
             m_rd = 1000 * ksi_eff * (1 - 0.5 * ksi_eff) * d ** 2 * self.b * f_cd
-        return m_rd, ksi_eff, x_eff
+        return round(m_rd, 2), round(ksi_eff, 4), round(x_eff, 4)
         
     
 def main():
@@ -90,7 +90,7 @@ def main():
                                    b=0.5,
                                    h=1.5,
                                    cl_conc='C30_37',
-                                   cl_steel='bst500s',
+                                   cl_steel='B500SP',
                                    c=30,
                                    fi=25,
                                    no_of_bars=8,

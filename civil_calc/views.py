@@ -71,13 +71,13 @@ def rect_reinf(request):
                                 fi=cc['fi'],
                                 no_of_bars=cc['no_of_bars'],
                                 fi_s=cc['fi_s'])
-        dd = my_cross_sect.compute_m_rd_single_r()
-        ee = {
-            'm_rd': dd[0],
-            'ksi_eff': dd[1],
-            'x_eff': dd[2],
+        _dd = my_cross_sect.compute_m_rd_single_r()
+        _ee = {
+            'm_rd': _dd[0],  # nośność przekroju na zginanie
+            'ksi_eff': _dd[1],  # względne położenie osi obojętnej przekroju
+            'x_eff': _dd[2],  # wysokość strefy ściskanej
             }
-        return JsonResponse(ee)
+        return JsonResponse(_ee)
     return JsonResponse({"message": "No data received!"})
 
 
