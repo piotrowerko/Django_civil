@@ -50,3 +50,10 @@ frontend and backend on one dyno/app in heroku:
 https://stackoverflow.com/questions/36504768/deploy-the-backend-and-frontend-on-the-same-heroku-app-dyno
 
 heroku config:set DISABLE_COLLECTSTATIC=1
+
+authentication tokens:
+https://www.youtube.com/watch?v=Wq6JqXqOzCE
+https://www.youtube.com/watch?v=5JG5PyU1CXI&list=PLgCYzUzKIBE9Pi8wtx8g55fExDAPXBsbV&index=8
+
+surce code for authentication tokens:
+https://github.com/mitchtabian/CodingWithMitchBlog-REST-API/tree/Generating-Authentication-Tokens-(Django-Rest-framework-TokenAuthentication)/src
