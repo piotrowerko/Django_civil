@@ -27,12 +27,6 @@ def welcome(request):
 
 @api_view(["GET", "POST"])
 def sum_data(request):
-    # content = request.data
-    # aa = JsonResponse(content)
-    # # bb = aa.data
-    # # cc = bb["first_number"] + bb["second_number"]
-    # # dd = {"sum": cc}
-    # return aa
     if request.method == 'POST':
         pp = request.body
         cc = request.data
@@ -43,17 +37,22 @@ def sum_data(request):
 
 @api_view(["GET", "POST"])
 def comp_data(request):
-    # content = request.data
-    # aa = JsonResponse(content)
-    # # bb = aa.data
-    # # cc = bb["first_number"] + bb["second_number"]
-    # # dd = {"sum": cc}
-    # return aa
     if request.method == 'POST':
         cc = request.data
-        # dd = cc["first_number"] + cc["second_number"]
         inst_Calc = CalcPio2()
         dd = inst_Calc._sum(cc["first_number"], cc["second_number"])
+        ee = {'sum': dd}
+        return JsonResponse(ee)  #, safe=False)
+    return JsonResponse({"message": "No data received!"})
+
+@api_view(["GET", "POST"])
+def comp_data_three(request):
+    if request.method == 'POST':
+        cc = request.data
+        inst_Calc = CalcPio2()
+        dd = inst_Calc._sum(cc["first_number"],
+                            cc["second_number"], 
+                            cc["third_number"])
         ee = {'sum': dd}
         return JsonResponse(ee)  #, safe=False)
     return JsonResponse({"message": "No data received!"})

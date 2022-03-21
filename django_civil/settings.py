@@ -41,6 +41,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     #  moje aplikacje:
     'civil_calc',
+    'users',
     # dodatkowe aplikacje django:
     'rest_framework',
     'corsheaders',

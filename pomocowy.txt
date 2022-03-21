@@ -57,3 +57,6 @@ https://www.youtube.com/watch?v=5JG5PyU1CXI&list=PLgCYzUzKIBE9Pi8wtx8g55fExDAPXB
 
 surce code for authentication tokens:
 https://github.com/mitchtabian/CodingWithMitchBlog-REST-API/tree/Generating-Authentication-Tokens-(Django-Rest-framework-TokenAuthentication)/src
+
+https://github.com/mitchtabian/CodingWithMitchBlog-REST-API/tree/Restricting-Access-with-Permissions-(Django-Rest-framework)/src
+
