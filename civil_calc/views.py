@@ -1,12 +1,14 @@
 from django.shortcuts import render
 
-# Create your views here.
 from django.http import JsonResponse
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework import viewsets
+
 from civil_calc.models import Simple_c_calc
 from .serializers import Simple_c_calcSerializer
-from rest_framework import viewsets
+
 import json
 
 
@@ -46,6 +48,7 @@ def comp_data(request):
     return JsonResponse({"message": "No data received!"})
 
 @api_view(["GET", "POST"])
+@permission_classes((IsAuthenticated, ))
 def comp_data_three(request):
     if request.method == 'POST':
         cc = request.data

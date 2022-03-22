@@ -2,8 +2,10 @@ pip install python-dotenv
 pip install django
 pip install djangorestframework
 
-login imię
-hasło typowe
+
+email: owerkop@o.pl
+login: imię
+hasło: typowe
 
 http://localhost:8000/admin/
 py manage.py runserver
@@ -59,4 +61,13 @@ surce code for authentication tokens:
 https://github.com/mitchtabian/CodingWithMitchBlog-REST-API/tree/Generating-Authentication-Tokens-(Django-Rest-framework-TokenAuthentication)/src
 
 https://github.com/mitchtabian/CodingWithMitchBlog-REST-API/tree/Restricting-Access-with-Permissions-(Django-Rest-framework)/src
+
+
+problem z aktualizacją SQL:
+python manage.py makemigrations
+No changes detected
+(dj_venv2) PS C:\Python\git_projects\Django_civil> python manage.py migrate --run-syncdb
+
+resticting acces git tutorial code:
+https://github.com/mitchtabian/CodingWithMitchBlog-REST-API/tree/Restricting-Access-with-Permissions-(Django-Rest-framework)
 
