@@ -11,9 +11,10 @@ from . rect_single_reinf import RectCrSectSingle
 
 
 class RectCrSectDoubleR(RectCrSectSingle):
-    def __init__(self, name, b, h, cl_conc, cl_steel, c, fi, fi_s, fi_opp):
-        super().__init__(name, b, h, cl_conc, cl_steel, c, fi, 8, fi_s)
+    def __init__(self, name, b, h, cl_conc, cl_steel, c, fi, no_of_bars, fi_s, fi_opp, no_of_opp_bars):
+        super().__init__(name, b, h, cl_conc, cl_steel, c, fi, no_of_bars, fi_s)
         self.fi_opp = fi_opp  # diameter of second package of reinforcement
+        self.no_of_opp_bars = no_of_opp_bars
 
     def _compute_a2(self):
         """returns a2 value assuming one row of reinf"""
@@ -21,7 +22,8 @@ class RectCrSectDoubleR(RectCrSectSingle):
 
     def _compute_a_s2(self):
         """return an area of e.g. upper reinforcement"""
-        num_of_reb = float(input('input num of upper rebars: ').strip())  #.split()
+        # num_of_reb = float(input('input num of upper rebars: ').strip())  #.split()
+        num_of_reb = self.no_of_opp_bars
         return math.pi * (self.fi_opp / 1000) ** 2 / 4 * num_of_reb
 
     def _compute_ksi_eff_double_r(self):
@@ -31,10 +33,12 @@ class RectCrSectDoubleR(RectCrSectSingle):
         f_cd = self._get_fcd_eta()
         nominator = a_s1 * f_yd - a_s2 * f_yd
         denominator = self.b * self._compute_d() * f_cd
-        return nominator / denominator, a_s1, a_s2
+        ksi_eff = nominator / denominator
+        x_eff = ksi_eff * self._compute_d()
+        return ksi_eff, a_s1, a_s2, x_eff
 
     def compute_m_rd_double_r(self):
-        ksi_eff, a_s1, a_s2 = self._compute_ksi_eff_double_r()
+        ksi_eff, a_s1, a_s2, x_eff = self._compute_ksi_eff_double_r()
         d = self._compute_d()
         f_cd = self._get_fcd_eta()
         a2 = self._compute_a2()
@@ -44,16 +48,16 @@ class RectCrSectDoubleR(RectCrSectSingle):
                 print("ksi_eff > 2 * a2 / d")
                 m_rd = 1000 * ksi_eff * (1 - 0.5 * ksi_eff) * d ** 2 * self.b * f_cd \
                 + 1000 * (a_s2 * (d - a2) * self.cl_steel_data[1])
-                return m_rd, ksi_eff
+                return round(m_rd, 2), round(ksi_eff, 4), round(x_eff, 4)
             else:
                 print("ksi_eff <= 2 * a2 / d")
                 m_rd = 1000 * a_s1 * (d - a2) * self.cl_steel_data[1]
-                return m_rd, ksi_eff
+                return round(m_rd, 2), round(ksi_eff, 4), round(x_eff, 4)
         else:
             print("reinforcement is NOT fully used; sigma_s < f_yd")
             ksi_eff = self.cl_steel_data[3]  # # ksi_eff_lim assuming LAMBDA = 0.8 and EPSILON CU = 3.5 * (10 ** -3)
             m_rd = 1000 * ksi_eff * (1 - 0.5 * ksi_eff) * d ** 2 * self.b * f_cd
-            return m_rd, ksi_eff
+            return round(m_rd, 2), round(ksi_eff, 4), round(x_eff, 4)
 
 def main():
     my_double_reinf_cross_sec = RectCrSectDoubleR(name='moj_przekr_prost',
@@ -63,10 +67,13 @@ def main():
                                                   cl_steel='B500SP',
                                                   c=30,
                                                   fi=20,
+                                                  no_of_bars=10,
                                                   fi_s=12,
-                                                  fi_opp=20)
+                                                  fi_opp=16,
+                                                  no_of_opp_bars=2)
     results = my_double_reinf_cross_sec.compute_m_rd_double_r()
     print(f'ksi eff:  {results[1]}')
+    print(f'x_eff:  {results[2]}')
     print(f'max. load capasity bending moment:  {results[0]}')
 
 if __name__ == '__main__':

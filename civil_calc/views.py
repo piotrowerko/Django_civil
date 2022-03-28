@@ -14,6 +14,7 @@ import json
 
 from .deep_backend.calc_pio2 import CalcPio2
 from .deep_backend.rect_single_reinf import RectCrSectSingle
+from .deep_backend.rect_double_reinf import RectCrSectDoubleR
 
 @api_view(["GET", "POST"])  # parsing is done automatically
 def welcome(request):
@@ -82,6 +83,29 @@ def comp_data_three(request):
         return JsonResponse(ee)  #, safe=False)
     return JsonResponse({"message": "No data received!"})
 
+@api_view(["GET", "POST"])
+def rect_double_reinf(request):
+    if request.method == 'POST':
+        cc = request.data
+        my_cross_sect = RectCrSectDoubleR(name=cc['name'],
+                                b=cc['b'],
+                                h=cc['h'],
+                                cl_conc=cc['cl_conc'],
+                                cl_steel=cc['cl_steel'],
+                                c=cc['c'],
+                                fi=cc['fi'],
+                                no_of_bars=cc['no_of_bars'],
+                                fi_s=cc['fi_s'],
+                                fi_opp=cc['fi_opp'],
+                                no_of_opp_bars=cc['no_of_opp_bars'])
+        _dd = my_cross_sect.compute_m_rd_double_r()
+        _ee = {
+            'm_rd': _dd[0],  # nośność przekroju na zginanie
+            'ksi_eff': _dd[1],  # względne położenie osi obojętnej przekroju
+            'x_eff': _dd[2],  # wysokość strefy ściskanej
+            }
+        return JsonResponse(_ee)
+    return JsonResponse({"message": "No data received!"})
 
 
 

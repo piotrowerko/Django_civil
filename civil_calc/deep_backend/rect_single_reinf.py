@@ -1,7 +1,5 @@
 import csv
 import math
-import os
-import sys
 
 # if __name__ == '__main__':
 #     from mat_rein_steel import ReinSteel
