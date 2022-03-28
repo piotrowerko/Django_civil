@@ -48,19 +48,6 @@ def comp_data(request):
     return JsonResponse({"message": "No data received!"})
 
 @api_view(["GET", "POST"])
-@permission_classes((IsAuthenticated, ))
-def comp_data_three(request):
-    if request.method == 'POST':
-        cc = request.data
-        inst_Calc = CalcPio2()
-        dd = inst_Calc._sum(cc["first_number"],
-                            cc["second_number"], 
-                            cc["third_number"])
-        ee = {'sum': dd}
-        return JsonResponse(ee)  #, safe=False)
-    return JsonResponse({"message": "No data received!"})
-
-@api_view(["GET", "POST"])
 def rect_reinf(request):
     if request.method == 'POST':
         cc = request.data
@@ -81,6 +68,21 @@ def rect_reinf(request):
             }
         return JsonResponse(_ee)
     return JsonResponse({"message": "No data received!"})
+
+@api_view(["GET", "POST"])
+@permission_classes((IsAuthenticated, ))
+def comp_data_three(request):
+    if request.method == 'POST':
+        cc = request.data
+        inst_Calc = CalcPio2()
+        dd = inst_Calc._sum(cc["first_number"],
+                            cc["second_number"], 
+                            cc["third_number"])
+        ee = {'sum': dd}
+        return JsonResponse(ee)  #, safe=False)
+    return JsonResponse({"message": "No data received!"})
+
+
 
 
 

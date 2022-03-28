@@ -71,3 +71,7 @@ No changes detected
 resticting acces git tutorial code:
 https://github.com/mitchtabian/CodingWithMitchBlog-REST-API/tree/Restricting-Access-with-Permissions-(Django-Rest-framework)
 
+uwaga do restrictions:
+Hi, awesome tutorial, but in the case of the 'DEFAULT_PERMISSION_CLASSES', this sets global permissions to every view, so once you've put 
+the 'IsAuthenticated' permission in it, you dont have to manually add it to all your views again like u were doing with the @permission_classes decorator.
+
