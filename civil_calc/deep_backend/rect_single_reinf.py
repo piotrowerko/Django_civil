@@ -3,10 +3,11 @@ import math
 import os
 import sys
 
-if __name__ == '__main__':
-    from mat_rein_steel import ReinSteel
-else:
-    from . mat_rein_steel import ReinSteel
+# if __name__ == '__main__':
+#     from mat_rein_steel import ReinSteel
+# else:
+#     from . mat_rein_steel import ReinSteel
+from . mat_rein_steel import ReinSteel
 
 class RectCrSectSingle():
     """bending of rectangular cross section with singular reinforcement:
