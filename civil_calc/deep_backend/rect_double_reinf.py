@@ -11,6 +11,9 @@ from . rect_single_reinf import RectCrSectSingle
 
 
 class RectCrSectDoubleR(RectCrSectSingle):
+    """bending of rectangular cross section with double reinforcement:
+    evaluation of bending moment capasity [kNm];
+    Lapko Jensen fig. 4.17b"""
     def __init__(self, name, b, h, cl_conc, cl_steel, c, fi, no_of_bars, fi_s, fi_opp, no_of_opp_bars):
         super().__init__(name, b, h, cl_conc, cl_steel, c, fi, no_of_bars, fi_s)
         self.fi_opp = fi_opp  # diameter of second package of reinforcement

@@ -15,6 +15,7 @@ import json
 from .deep_backend.calc_pio2 import CalcPio2
 from .deep_backend.rect_single_reinf import RectCrSectSingle
 from .deep_backend.rect_double_reinf import RectCrSectDoubleR
+from .deep_backend.rect_find_reinf import RectCrReinf
 
 @api_view(["GET", "POST"])  # parsing is done automatically
 def welcome(request):
@@ -107,6 +108,33 @@ def rect_double_reinf(request):
         return JsonResponse(_ee)
     return JsonResponse({"message": "No data received!"})
 
+
+@api_view(["GET", "POST"])
+def rect_find_reinf(request):
+    if request.method == 'POST':
+        cc = request.data
+        my_cross_sect = RectCrReinf(name=cc['name'],
+                                b=cc['b'],
+                                h=cc['h'],
+                                cl_conc=cc['cl_conc'],
+                                cl_steel=cc['cl_steel'],
+                                c=cc['c'],
+                                fi=cc['fi'],
+                                no_of_bars=10,
+                                fi_s=cc['fi_s'],
+                                fi_opp=cc['fi_opp'],
+                                no_of_opp_bars=2,
+                                m_sd=cc['m_sd'])
+        _dd = my_cross_sect.compute_reinf_rect()
+        _ee = {
+            'As1': _dd[0],
+            'ns1': _dd[1],
+            'As2': _dd[2],
+            'ns2': _dd[3],
+            'remark': _dd[4]
+            }
+        return JsonResponse(_ee)
+    return JsonResponse({"message": "No data received!"})
 
 
 

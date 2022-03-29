@@ -9,7 +9,8 @@ from . mat_rein_steel import ReinSteel
 
 class RectCrSectSingle():
     """bending of rectangular cross section with singular reinforcement:
-    evaluation of bending moment capasity [kNm]"""
+    evaluation of bending moment capasity [kNm];
+    Lapko Jensen fig. 4.17b"""
     def __init__(self, name, b, h, cl_conc, cl_steel, c, fi, no_of_bars, fi_s):  
         self.name = name
         self.b = b  # cross section width
