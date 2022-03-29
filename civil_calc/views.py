@@ -16,6 +16,7 @@ from .deep_backend.calc_pio2 import CalcPio2
 from .deep_backend.rect_single_reinf import RectCrSectSingle
 from .deep_backend.rect_double_reinf import RectCrSectDoubleR
 from .deep_backend.rect_find_reinf import RectCrReinf
+from .deep_backend.t_sect_ben_reinf import TCrReinf
 
 @api_view(["GET", "POST"])  # parsing is done automatically
 def welcome(request):
@@ -137,6 +138,44 @@ def rect_find_reinf(request):
     return JsonResponse({"message": "No data received!"})
 
 
+@api_view(["GET", "POST"])
+def t_sect_ben_reinf(request):
+    if request.method == 'POST':
+        cc = request.data
+        my_cross_sect = TCrReinf(name=cc['name'],
+                                b=cc['b'],
+                                h=cc['h'],
+                                hsl=cc['h_sl'], #[m] thickness of upper slab
+                                beff=cc['b_eff'], #[m] effective width of upper slab
+                                cl_conc=cc['cl_conc'],
+                                cl_steel=cc['cl_steel'],
+                                c=cc['c'],
+                                fi=cc['fi'],
+                                no_of_bars=10,
+                                fi_s=cc['fi_s'],
+                                fi_opp=cc['fi_opp'],
+                                no_of_opp_bars=2,
+                                m_sd=cc['m_sd'])
+        _dd = my_cross_sect.compute_reinf_T()
+        if _dd[0][4] != _dd[1]:
+            _ee = {
+                'As1': _dd[0][0],
+                'ns1': _dd[0][1],
+                'As2': _dd[0][2],
+                'ns2': _dd[0][3],
+                'remark': _dd[0][4],
+                'remark2': _dd[1]
+                }
+        else:
+            _ee = {
+                'As1': _dd[0][0],
+                'ns1': _dd[0][1],
+                'As2': _dd[0][2],
+                'ns2': _dd[0][3],
+                'remark': _dd[0][4],
+                }
+        return JsonResponse(_ee)
+    return JsonResponse({"message": "No data received!"})
 
 
 
