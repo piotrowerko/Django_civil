@@ -4,6 +4,9 @@ from . rect_double_reinf import RectCrSectDoubleR
 
 
 class RectCrReinf(RectCrSectDoubleR):
+    """bending of rectangular cross section with singular reinforcement:
+    reinforcement dimentioning [m2];
+    Lapko Jensen fig. 4.16"""
     def __init__(self, name, b, h, cl_conc, cl_steel, 
                  c, fi, no_of_bars, fi_s, fi_opp, 
                  no_of_opp_bars, m_sd):

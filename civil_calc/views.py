@@ -157,7 +157,7 @@ def t_sect_ben_reinf(request):
                                 no_of_opp_bars=2,
                                 m_sd=cc['m_sd'])
         _dd = my_cross_sect.compute_reinf_T()
-        if _dd[0][4] != _dd[1]:
+        if _dd[0][4] != _dd[1]:  # rectangle case
             _ee = {
                 'As1': _dd[0][0],
                 'ns1': _dd[0][1],
@@ -166,7 +166,7 @@ def t_sect_ben_reinf(request):
                 'remark': _dd[0][4],
                 'remark2': _dd[1]
                 }
-        else:
+        else:  # real T case
             _ee = {
                 'As1': _dd[0][0],
                 'ns1': _dd[0][1],

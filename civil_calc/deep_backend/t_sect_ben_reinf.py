@@ -4,13 +4,16 @@ import math
 from . rect_find_reinf import RectCrReinf
 
 class TCrReinf(RectCrReinf):
-    """T cross section bending computations"""
+    """T cross section bending computations;
+    reinforcement dimentioning [m2];
+    graph: fig. 4.27, page 117 Lapko-Jensen"""
     
     def __init__(self, name, b, h, hsl, beff, cl_conc, cl_steel, 
                  c, fi, no_of_bars, fi_s, fi_opp, no_of_opp_bars, m_sd):
         super().__init__(name, b, h, cl_conc, cl_steel, 
                  c, fi, no_of_bars, fi_s, fi_opp, 
                  no_of_opp_bars, m_sd)
+
         self.hsl = hsl
         self.beff = beff
 
