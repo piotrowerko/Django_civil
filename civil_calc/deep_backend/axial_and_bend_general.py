@@ -58,12 +58,12 @@ class GeneralAxBend(TCrReinf):
         if second_input_list==None:
             fig0, ax0 = plt.subplots()
             # fig0.set_size_inches(9, 6)
-            plt.bar(input_list, [i for i in range(len(input_list))], width=0.01)
+            plt.barh(input_list, [i for i in range(len(input_list))], height=0.01)
         else:
             # fig0, ax0 = plt.subplots()
             # # fig0.set_size_inches(9, 6)
             # ax0.barv(input_list, second_input_list, label='signal')
-            plt.bar(input_list, second_input_list, width=0.01)
+            plt.barh(input_list, second_input_list, height=0.01)
         # ax0.xaxis.grid(True, which='major')
         # ax0.yaxis.grid(True, which='major')
         # ax0.set_xlabel('Time [s]', fontsize=15)
@@ -361,13 +361,13 @@ def main():
                                 nl_reinf_top=(1, (12, 0, 0)), # [mm] denotes number of layers of top reinforcement and corresponding numbers of rebars
                                 nl_reinf_bottom=(1, (8, 0 , 0)), # [mm] denotes number of layers of bottom reinforcement and corresponding numbers of rebars
                                 no_of_opp_bars=2,
-                                m_sd=-5, # [MNm]
-                                n_sd=-1) # [MN]
+                                m_sd=5, # [MNm]
+                                n_sd=2) # [MN]
 
-    inter_forces_data1 = my_rc_cross_sec3.find_optimal_eps_fi(30)
+    inter_forces_data1 = my_rc_cross_sec.find_optimal_eps_fi(30)
     eps_cur, fi_cur = inter_forces_data1[0], inter_forces_data1[1]
     # inter_forces_data = my_rc_cross_sec._internal_forces(eps_cur=-0.13863684678772847, fi_cur=0.16516223687652937)
-    inter_forces_data = my_rc_cross_sec3._internal_forces(eps_cur, fi_cur)
+    inter_forces_data = my_rc_cross_sec._internal_forces(eps_cur, fi_cur)
     
     GeneralAxBend.trial_plot(inter_forces_data[6], inter_forces_data[3], 'strains in steel')
     GeneralAxBend.trial_plot(inter_forces_data[6], inter_forces_data[4], 'stress in steel')
