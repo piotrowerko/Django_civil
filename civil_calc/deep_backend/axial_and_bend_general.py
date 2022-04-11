@@ -346,58 +346,58 @@ def main():
                                 fi_opp=32, # [mm]
                                 nl_reinf_top=(1, (8, 0, 0)), # [mm] denotes number of layers of top reinforcement and corresponding numbers of rebars
                                 nl_reinf_bottom=(1, (8, 0 , 0)), # [mm] denotes number of layers of bottom reinforcement and corresponding numbers of rebars
-                                m_sd=0.5, # [MNm]
+                                m_sd=5.5, # [MNm]
                                 n_sd=0,
-                                tendon_info=(2, (0.65, 3, 19, 150), (0.85, 3, 19, 0))) # (number of temdon layers, 
+                                tendon_info=(1, (0.2, 3, 19, 150))) # (number of temdon layers, 
     #(layer height, no_of_tendons in layer, number of strands in each tendon, area if single strand))
     
-    my_rc_cross_sec1a = GeneralAxBend(name='GENERAL_CROSS-SECT_no1a',  # sprawdzenie na prostokącie symetrii odpowiedzi w przekroju symetrycznym
-                                b=(0, 1.0, 0), # [m] width of the individual rectangles
-                                h=(0.0, 1.5, 0.0), # [m] height of the individual rectangles
-                                #hsl=0.20, #[m] thickness of upper slab
-                                #beff=1.2, #[m] effective width of upper slab
-                                cl_conc='C30_37',
-                                cl_steel='B500SP',
-                                c=25, # [mm]
-                                fi=32, # [mm]
-                                fi_s=12, # [mm]
-                                fi_opp=32, # [mm]
-                                nl_reinf_top=(1, (10, 0, 0)), # [mm] denotes number of layers of top reinforcement and corresponding numbers of rebars
-                                nl_reinf_bottom=(1, (10, 0 , 0)), # [mm] denotes number of layers of bottom reinforcement and corresponding numbers of rebars
-                                m_sd=-3, # [MNm]
-                                n_sd=-0.5) # [MN]
+    # my_rc_cross_sec1a = GeneralAxBend(name='GENERAL_CROSS-SECT_no1a',  # sprawdzenie na prostokącie symetrii odpowiedzi w przekroju symetrycznym
+    #                             b=(0, 1.0, 0), # [m] width of the individual rectangles
+    #                             h=(0.0, 1.5, 0.0), # [m] height of the individual rectangles
+    #                             #hsl=0.20, #[m] thickness of upper slab
+    #                             #beff=1.2, #[m] effective width of upper slab
+    #                             cl_conc='C30_37',
+    #                             cl_steel='B500SP',
+    #                             c=25, # [mm]
+    #                             fi=32, # [mm]
+    #                             fi_s=12, # [mm]
+    #                             fi_opp=32, # [mm]
+    #                             nl_reinf_top=(1, (10, 0, 0)), # [mm] denotes number of layers of top reinforcement and corresponding numbers of rebars
+    #                             nl_reinf_bottom=(1, (10, 0 , 0)), # [mm] denotes number of layers of bottom reinforcement and corresponding numbers of rebars
+    #                             m_sd=-3, # [MNm]
+    #                             n_sd=-0.5) # [MN]
     
-    my_rc_cross_sec2 = GeneralAxBend(name='GENERAL_CROSS-SECT_no2',
-                                b=(0, 1.0, 2.5), # [m] width of the individual rectangles
-                                h=(0, 1.85, 0.3), # [m] height of the individual rectangles
-                                #hsl=0.20, #[m] thickness of upper slab
-                                #beff=1.2, #[m] effective width of upper slab
-                                cl_conc='C30_37',
-                                cl_steel='B500SP',
-                                c=25, # [mm]
-                                fi=32, # [mm]
-                                fi_s=12, # [mm]
-                                fi_opp=12, # [mm]
-                                nl_reinf_top=(1, (25, 0, 0)), # [mm] denotes number of layers of top reinforcement and corresponding numbers of rebars
-                                nl_reinf_bottom=(1, (8, 0 , 0)), # [mm] denotes number of layers of bottom reinforcement and corresponding numbers of rebars
-                                m_sd=3, # [MNm]
-                                n_sd=-3) # [MN]
+    # my_rc_cross_sec2 = GeneralAxBend(name='GENERAL_CROSS-SECT_no2',
+    #                             b=(0, 1.0, 2.5), # [m] width of the individual rectangles
+    #                             h=(0, 1.85, 0.3), # [m] height of the individual rectangles
+    #                             #hsl=0.20, #[m] thickness of upper slab
+    #                             #beff=1.2, #[m] effective width of upper slab
+    #                             cl_conc='C30_37',
+    #                             cl_steel='B500SP',
+    #                             c=25, # [mm]
+    #                             fi=32, # [mm]
+    #                             fi_s=12, # [mm]
+    #                             fi_opp=12, # [mm]
+    #                             nl_reinf_top=(1, (25, 0, 0)), # [mm] denotes number of layers of top reinforcement and corresponding numbers of rebars
+    #                             nl_reinf_bottom=(1, (8, 0 , 0)), # [mm] denotes number of layers of bottom reinforcement and corresponding numbers of rebars
+    #                             m_sd=3, # [MNm]
+    #                             n_sd=-3) # [MN]
     
-    my_rc_cross_sec3 = GeneralAxBend(name='GENERAL_CROSS-SECT_no2',
-                                b=(1.2, 0.6, 1.2), # [m] width of the individual rectangles
-                                h=(0.4, 1.00, 0.25), # [m] height of the individual rectangles
-                                #hsl=0.20, #[m] thickness of upper slab
-                                #beff=1.2, #[m] effective width of upper slab
-                                cl_conc='C30_37',
-                                cl_steel='B500SP',
-                                c=25, # [mm]
-                                fi=20, # [mm]
-                                fi_s=12, # [mm]
-                                fi_opp=32, # [mm]
-                                nl_reinf_top=(1, (12, 0, 0)), # [mm] denotes number of layers of top reinforcement and corresponding numbers of rebars
-                                nl_reinf_bottom=(1, (8, 0 , 0)), # [mm] denotes number of layers of bottom reinforcement and corresponding numbers of rebars
-                                m_sd=5, # [MNm]
-                                n_sd=2) # [MN]
+    # my_rc_cross_sec3 = GeneralAxBend(name='GENERAL_CROSS-SECT_no2',
+    #                             b=(1.2, 0.6, 1.2), # [m] width of the individual rectangles
+    #                             h=(0.4, 1.00, 0.25), # [m] height of the individual rectangles
+    #                             #hsl=0.20, #[m] thickness of upper slab
+    #                             #beff=1.2, #[m] effective width of upper slab
+    #                             cl_conc='C30_37',
+    #                             cl_steel='B500SP',
+    #                             c=25, # [mm]
+    #                             fi=20, # [mm]
+    #                             fi_s=12, # [mm]
+    #                             fi_opp=32, # [mm]
+    #                             nl_reinf_top=(1, (12, 0, 0)), # [mm] denotes number of layers of top reinforcement and corresponding numbers of rebars
+    #                             nl_reinf_bottom=(1, (8, 0 , 0)), # [mm] denotes number of layers of bottom reinforcement and corresponding numbers of rebars
+    #                             m_sd=5, # [MNm]
+    #                             n_sd=2) # [MN]
 
     inter_forces_data1 = my_rc_cross_sec.find_optimal_eps_fi(30)
     eps_cur, fi_cur = inter_forces_data1[0], inter_forces_data1[1]

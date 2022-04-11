@@ -11,7 +11,7 @@ class TCrReinf(RectCrReinf):
     def __init__(self, name, b, h, cl_conc, cl_steel, 
                  c, fi, fi_s, fi_opp, m_sd=0, hsl=1, beff=1):
         super().__init__(name, b, h, cl_conc, cl_steel, 
-                 c, fi, fi_s, fi_opp)
+                 c, fi, fi_s, fi_opp, m_sd)
 
         self.hsl = hsl
         self.beff = beff
