@@ -9,10 +9,9 @@ class TCrReinf(RectCrReinf):
     graph: fig. 4.27, page 117 Lapko-Jensen"""
     
     def __init__(self, name, b, h, hsl, beff, cl_conc, cl_steel, 
-                 c, fi, no_of_bars, fi_s, fi_opp, no_of_opp_bars, m_sd):
+                 c, fi, fi_s, fi_opp, m_sd):
         super().__init__(name, b, h, cl_conc, cl_steel, 
-                 c, fi, no_of_bars, fi_s, fi_opp, 
-                 no_of_opp_bars, m_sd)
+                 c, fi, fi_s, fi_opp, m_sd)
 
         self.hsl = hsl
         self.beff = beff
@@ -89,10 +88,8 @@ def main():
                                 cl_steel='BSt500S',
                                 c=30, # [mm]
                                 fi=32, # [mm]
-                                no_of_bars=10,
                                 fi_s=12, # [mm]
                                 fi_opp=16, # [mm]
-                                no_of_opp_bars=2,
                                 m_sd=12000) # [kNm]
     res = my_rc_cross_sec.compute_reinf_T()
     print(f'bottom needs: {res[0][1]} x fi{my_rc_cross_sec.fi} >= {res[0][0]}')

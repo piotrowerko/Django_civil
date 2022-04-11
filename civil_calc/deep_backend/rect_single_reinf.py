@@ -11,7 +11,7 @@ class RectCrSectSingle():
     """bending of rectangular cross section with singular reinforcement:
     evaluation of bending moment capasity [kNm];
     Lapko Jensen fig. 4.17b"""
-    def __init__(self, name, b, h, cl_conc, cl_steel, c, fi, no_of_bars, fi_s):  
+    def __init__(self, name, b, h, cl_conc, cl_steel, c, fi, fi_s, no_of_bars=2):  
         self.name = name
         self.b = b  # cross section width
         self.h = h  # cross section height

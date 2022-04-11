@@ -8,10 +8,9 @@ class RectCrReinf(RectCrSectDoubleR):
     reinforcement dimentioning [m2];
     Lapko Jensen fig. 4.16"""
     def __init__(self, name, b, h, cl_conc, cl_steel, 
-                 c, fi, no_of_bars, fi_s, fi_opp, 
-                 no_of_opp_bars, m_sd):
+                 c, fi, fi_s, fi_opp, m_sd=0):
         super().__init__(name, b, h, cl_conc, cl_steel, 
-                         c, fi, no_of_bars, fi_s, fi_opp, no_of_opp_bars)
+                         c, fi, fi_s, fi_opp)
         self.m_sd = m_sd
 
     def __str__(self):
@@ -87,10 +86,8 @@ def main():
                                 cl_steel='BSt500S',
                                 c=30, # [mm]
                                 fi=32, # [mm]
-                                no_of_bars=10,
                                 fi_s=12, # [mm]
                                 fi_opp=16, # [mm]
-                                no_of_opp_bars=2,
                                 m_sd=6000) # [kNm]
     res = my_rc_cross_sec.compute_reinf_rect()
     print(res)

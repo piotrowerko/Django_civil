@@ -7,7 +7,6 @@ https://chodor-projekt.net/encyclopedia/krzywe-interakcji-m-n-zelbetu/
 oleszek
 """
 
-import csv
 import math
 import numpy as np
 import matplotlib.pyplot as plt
@@ -24,21 +23,25 @@ class GeneralAxBend(TCrReinf):
     [compression is denoted by plus sign]"""
     EC2 = 0.0020  # concrete strain of section in the begining of flat (plastic) stresses
     ECU2 = 0.0035  # max. concrete strain of section
-    EYD = 0.00217  # max. steel strain (FOR BOTH B500SP AND BST500S STEEL)
+    EYD = 0.00217  # steel strain in Hook's region (FOR BOTH B500SP AND BST500S STEEL)
     _R = 20  # curve parameter (FOR BOTH B500SP AND BST500S STEEL ?)
     E_STELL = 200 * 10 ** 3  # acc. to [2]
+    E_TENDONS = 180 * 10 ** 3
+    E_EK_TENDONS = 0.010  # max. strain in the steel of the tendons
+    R_K_TENDONS = 1860  # [MPa] characteristic strength of steel of the tendons
     EPS_INIT = 0.001 * 10 ** -2
+    EPS_T_INIT = 0.60 * R_K_TENDONS / E_TENDONS  # inital linear strain in tednon due to inital stressing force (uwględniono straty trwałe)
     N_CONC_LAYERS = 30  # number of layers of virtual division of the concrete cross-section for the needs of numerical integrals
     CONC_L_THIC = 0.005 # concrete layer thickness of virtual division of the concrete cross-section for the needs of numerical integrals
     ETA = 0.9 # learning rate
 
     def __init__(self, name, b, h, hsl, 
                  beff, cl_conc, cl_steel, 
-                 c, fi, no_of_bars, fi_s, fi_opp, 
+                 c, fi, fi_s, fi_opp, 
                  nl_reinf_top, nl_reinf_bottom,
-                 no_of_opp_bars, m_sd, n_sd):
+                 m_sd, n_sd, tendon_info=None):
         super().__init__(name, b, h, hsl, beff, cl_conc, cl_steel, c, 
-                        fi, no_of_bars, fi_s, fi_opp, no_of_opp_bars, m_sd)
+                        fi, fi_s, fi_opp, m_sd)
         self.n_sd = n_sd
         char_geom = CharGeom()
         #self.e_vert = char_geom.find_center_m((b[2], h[2], b[1], h[1], b[0], h[0]))[0]  # = sefl.h_bottom
@@ -47,6 +50,7 @@ class GeneralAxBend(TCrReinf):
         self.nl_reinf_top = nl_reinf_top
         self.nl_reinf_bottom = nl_reinf_bottom
         self.fi_init = GeneralAxBend.EPS_INIT / max(self.e_vert, self.h_top)
+        self.tendon_info = tendon_info
         
     @classmethod
     def alter_constr(self):
@@ -57,18 +61,9 @@ class GeneralAxBend(TCrReinf):
     def trial_plot(input_list, second_input_list=None, title=None):
         if second_input_list==None:
             fig0, ax0 = plt.subplots()
-            # fig0.set_size_inches(9, 6)
             plt.barh(input_list, [i for i in range(len(input_list))], height=0.01)
         else:
-            # fig0, ax0 = plt.subplots()
-            # # fig0.set_size_inches(9, 6)
-            # ax0.barv(input_list, second_input_list, label='signal')
             plt.barh(input_list, second_input_list, height=0.01)
-        # ax0.xaxis.grid(True, which='major')
-        # ax0.yaxis.grid(True, which='major')
-        # ax0.set_xlabel('Time [s]', fontsize=15)
-        # ax0.set_ylabel('Vertical displcement [mm]', fontsize=15)
-        # ax0.tick_params(labelsize=15)
         plt.title(title)
         plt.grid(True)
         plt.show()
@@ -89,7 +84,7 @@ class GeneralAxBend(TCrReinf):
         return self._E_cm  # kluczowe pytanie - czym się różni atrybut od właściwości klasy (odp: wła. ma setter i deleter)
 
     def _initial_rotation(self):
-        # ROTACJA TAKA ŻEBY DAŁA  JEDNĄ SETNĄ PROMILA W SKRAJNYCH WŁÓKNACH
+        # ROTACJA TAKA ŻEBY DAŁA JEDNĄ SETNĄ PROMILA W SKRAJNYCH WŁÓKNACH
         fi_init = GeneralAxBend.EPS_INIT / max(self.e_vert, self.h_top)
         return fi_init
 
@@ -152,7 +147,20 @@ class GeneralAxBend(TCrReinf):
         reinf_areas = [rebar_numbers_bott[i] * single_bar_area_bot for i in range(n_bott)] \
             + [rebar_numbers_upp[i] * single_bar_area_upp for i in range(n_upp)]
         return r_rel_heights, reinf_areas, n_of_layers
-
+    
+    def _tendon_geom(self):
+        """returns geometrical deatails of tendons"""
+        t_inf = self.tendon_info
+        tend_heights = []
+        tend_areas = []
+        no_of_layers = t_inf[0]
+        for i, el in enumerate(t_inf, start=0):
+            if i > 0:
+                tend_heights.append(el[0])
+                tend_areas.append(el[1] * el[2] * el[3] * 10 ** - 6)
+        t_rel_heights = self._relative_heights(tend_heights)
+        return t_rel_heights, tend_areas, no_of_layers
+    
     def _strains_in_steel(self, eps_cur=0.0, fi_cur=0.0):
         """finds strain in steel layers basing on rotation and eps_linear"""
         r_heights, reinf_areas, n_of_layers = self._reinf_geom()
@@ -160,6 +168,15 @@ class GeneralAxBend(TCrReinf):
         for i in range(n_of_layers):
             strain_steel[i] = (r_heights[i] * fi_cur) + eps_cur
         return strain_steel, r_heights, reinf_areas
+
+    def _strains_in_tendons(self, eps_cur=0.0, fi_cur=0.0):
+        """finds strain in steel of tendons basing on rotation and eps_linear"""
+        # WARNING: INITLIAL EPSILON MUST BE COMPUTED!!!
+        t_heights, t_areas, n_of_layers = self._tendon_geom()
+        strain_tendon = [GeneralAxBend.EPS_T_INIT] * n_of_layers
+        for i in range(n_of_layers):
+            strain_tendon[i] += (t_heights[i] * fi_cur) + eps_cur
+        return strain_tendon, t_heights, t_areas
 
     def _stress_strain_steel(self, strain_steel=0.0):
         """returns stress-strain relationsip in steel"""
@@ -184,12 +201,28 @@ class GeneralAxBend(TCrReinf):
         # WARINING: doubling of stresses in the reinforcement surrounded 
         # by concrete in compression was not taken into account!!
         return sigma_steel, e_ud
+    
+    def _stress_strain_tendons(self, strain_tendon=0.0):
+        """returns stress-strain relationsip in in the steel of the tendons"""
+        e_uk = GeneralAxBend.E_EK_TENDONS
+        e_ud = e_uk / 1.00
+        #f_yk = GeneralAxBend.R_K_TENDONS
+        E_tendons = GeneralAxBend.E_TENDONS
+        sigma_tendon = E_tendons * strain_tendon
+        return sigma_tendon, e_ud
 
     def _stress_in_steel(self, eps_cur=0.0, fi_cur=0.0):
         """returns stresses in reinforcement layers"""
         strain_steel, r_heights, reinf_areas = self._strains_in_steel(eps_cur, fi_cur)
         stress_steel = [self._stress_strain_steel(el)[0] for el in strain_steel]
         return stress_steel, r_heights, reinf_areas, strain_steel
+    
+    def _stress_in_tendons(self, eps_cur=0.0, fi_cur=0.0):
+        """returns stresses in tendons layers"""
+        strain_t, t_heights, t_areas = self._strains_in_tendons(eps_cur, fi_cur)
+        stress_tend = [self._stress_strain_tendons(el)[0] for el in strain_t]
+        return stress_tend, t_heights, t_areas, strain_t
+    
 
     def _relative_heights(self, heights):
         "returns heights relative to center of gravity"
@@ -203,24 +236,32 @@ class GeneralAxBend(TCrReinf):
         _a = self._stress_in_conc(eps_cur, fi_cur)
         stress_in_conc, conc_lay_heights, conc_areas, strain_conc = _a[0], _a[2], _a[4], _a[5]
         stress_in_steel, r_heights, steel_areas, strain_steel = self._stress_in_steel(eps_cur, fi_cur)
+        stress_in_t, t_heights, t_areas, strain_t = self._stress_in_tendons(eps_cur, fi_cur)
         # suma pole_plastra*naprezenieplastra
         # suma pole_warw_pretow*naprezenia_w_wawie-pretow
         forces_in_conc = [stress_in_conc[i] * conc_areas[i] \
             for i in range(len(stress_in_conc))]
         forces_in_steel = [stress_in_steel[i] * steel_areas[i] \
             for i in range(len(stress_in_steel))]
-        axial_force = sum(forces_in_conc + forces_in_steel)
+        forces_in_t = [stress_in_t[i] * t_areas[i] \
+            for i in range(len(stress_in_t))]
+        axial_force = sum(forces_in_conc + forces_in_steel + forces_in_t)
         # suma pole_plastra*naprezenieplastra*odlegloscdoSRC
         # suma pole_warw_pretow*naprezenia_w_wawie-pretow*odlegl_doSRC
         bending_moment_conc = [forces_in_conc[i] * conc_lay_heights[i] for i in range(len(forces_in_conc))]
         bending_moment_steel = [forces_in_steel[i] * r_heights[i] for i in range(len(forces_in_steel))]
-        bending_moment = sum(bending_moment_conc + bending_moment_steel)
+        bending_moment_tend = [forces_in_t[i] * t_heights[i] for i in range(len(forces_in_t))]
+        bending_moment = sum(bending_moment_conc + bending_moment_steel + bending_moment_tend)
         return axial_force, \
                 sum(bending_moment_conc), \
                 sum(bending_moment_steel), \
+                sum(bending_moment_tend), \
                 strain_steel, \
                 stress_in_steel, \
                 forces_in_steel, r_heights, \
+                strain_t, \
+                stress_in_t, \
+                forces_in_t, t_heights, \
                 strain_conc, \
                 stress_in_conc, \
                 forces_in_conc, conc_lay_heights, \
@@ -301,14 +342,14 @@ def main():
                                 cl_steel='B500SP',
                                 c=25, # [mm]
                                 fi=32, # [mm]
-                                no_of_bars=10,
                                 fi_s=12, # [mm]
                                 fi_opp=12, # [mm]
                                 nl_reinf_top=(1, (8, 0, 0)), # [mm] denotes number of layers of top reinforcement and corresponding numbers of rebars
                                 nl_reinf_bottom=(1, (8, 0 , 0)), # [mm] denotes number of layers of bottom reinforcement and corresponding numbers of rebars
-                                no_of_opp_bars=2,
-                                m_sd=5, # [MNm]
-                                n_sd=2.5) # [MN]
+                                m_sd=0, # [MNm]
+                                n_sd=0,
+                                tendon_info=(1, (0.75, 3, 19, 150))) # (number of temdon layers, 
+    #(layer height, no_of_tendons in layer, number of strands in each tendon, area if single strand))
     
     my_rc_cross_sec1a = GeneralAxBend(name='GENERAL_CROSS-SECT_no1a',  # sprawdzenie na prostokącie symetrii odpowiedzi w przekroju symetrycznym
                                 b=(0, 1.0, 0), # [m] width of the individual rectangles
@@ -319,12 +360,10 @@ def main():
                                 cl_steel='B500SP',
                                 c=25, # [mm]
                                 fi=32, # [mm]
-                                no_of_bars=10,
                                 fi_s=12, # [mm]
                                 fi_opp=32, # [mm]
                                 nl_reinf_top=(1, (10, 0, 0)), # [mm] denotes number of layers of top reinforcement and corresponding numbers of rebars
                                 nl_reinf_bottom=(1, (10, 0 , 0)), # [mm] denotes number of layers of bottom reinforcement and corresponding numbers of rebars
-                                no_of_opp_bars=2,
                                 m_sd=-3, # [MNm]
                                 n_sd=-0.5) # [MN]
     
@@ -337,12 +376,10 @@ def main():
                                 cl_steel='B500SP',
                                 c=25, # [mm]
                                 fi=32, # [mm]
-                                no_of_bars=10,
                                 fi_s=12, # [mm]
                                 fi_opp=12, # [mm]
                                 nl_reinf_top=(1, (25, 0, 0)), # [mm] denotes number of layers of top reinforcement and corresponding numbers of rebars
                                 nl_reinf_bottom=(1, (8, 0 , 0)), # [mm] denotes number of layers of bottom reinforcement and corresponding numbers of rebars
-                                no_of_opp_bars=2,
                                 m_sd=3, # [MNm]
                                 n_sd=-3) # [MN]
     
@@ -355,30 +392,34 @@ def main():
                                 cl_steel='B500SP',
                                 c=25, # [mm]
                                 fi=20, # [mm]
-                                no_of_bars=10,
                                 fi_s=12, # [mm]
                                 fi_opp=32, # [mm]
                                 nl_reinf_top=(1, (12, 0, 0)), # [mm] denotes number of layers of top reinforcement and corresponding numbers of rebars
                                 nl_reinf_bottom=(1, (8, 0 , 0)), # [mm] denotes number of layers of bottom reinforcement and corresponding numbers of rebars
-                                no_of_opp_bars=2,
                                 m_sd=5, # [MNm]
                                 n_sd=2) # [MN]
 
     inter_forces_data1 = my_rc_cross_sec.find_optimal_eps_fi(30)
     eps_cur, fi_cur = inter_forces_data1[0], inter_forces_data1[1]
-    # inter_forces_data = my_rc_cross_sec._internal_forces(eps_cur=-0.13863684678772847, fi_cur=0.16516223687652937)
     inter_forces_data = my_rc_cross_sec._internal_forces(eps_cur, fi_cur)
     
-    GeneralAxBend.trial_plot(inter_forces_data[6], inter_forces_data[3], 'strains in steel')
-    GeneralAxBend.trial_plot(inter_forces_data[6], inter_forces_data[4], 'stress in steel')
-    GeneralAxBend.trial_plot(inter_forces_data[6], inter_forces_data[5], 'forces in steel')
-    GeneralAxBend.trial_plot(inter_forces_data[10], inter_forces_data[7], 'strains in concrete')
-    GeneralAxBend.trial_plot(inter_forces_data[10], inter_forces_data[8], 'stress in concrete')
-    GeneralAxBend.trial_plot(inter_forces_data[10], inter_forces_data[9], 'forces in concrete')
-    print('pure in forces:', inter_forces_data[0], inter_forces_data[-1])
-    # inter_forces_data1 = my_rc_cross_sec._update_eps_and_fi(eps_cur=-0.13863684678772847, fi_cur=0.16516223687652937, n_cur=-4.282748843304599, m_cur=1.918676231783936)
-    # print('pure in forces:', inter_forces_data1)
-
+    GeneralAxBend.trial_plot(inter_forces_data[7], inter_forces_data[4], 'strains in steel')
+    GeneralAxBend.trial_plot(inter_forces_data[7], inter_forces_data[5], 'stress in steel')
+    GeneralAxBend.trial_plot(inter_forces_data[7], inter_forces_data[6], 'forces in steel')
+    GeneralAxBend.trial_plot(inter_forces_data[11], inter_forces_data[8], 'strains in tendons')
+    GeneralAxBend.trial_plot(inter_forces_data[11], inter_forces_data[9], 'stress in tendons')
+    GeneralAxBend.trial_plot(inter_forces_data[11], inter_forces_data[10], 'forces in tendons')
+    GeneralAxBend.trial_plot(inter_forces_data[15], inter_forces_data[12], 'strains in concrete')
+    GeneralAxBend.trial_plot(inter_forces_data[15], inter_forces_data[13], 'stress in concrete')
+    GeneralAxBend.trial_plot(inter_forces_data[15], inter_forces_data[14], 'forces in concrete')
+    # #print('pure in forces:', inter_forces_data[0], inter_forces_data[-1])
+    # # inter_forces_data1 = my_rc_cross_sec._update_eps_and_fi(eps_cur=-0.13863684678772847, fi_cur=0.16516223687652937, n_cur=-4.282748843304599, m_cur=1.918676231783936)
+    # # print('pure in forces:', inter_forces_data1)
+    
+    print(my_rc_cross_sec._tendon_geom())
+    print(inter_forces_data[8])
+    print(inter_forces_data[11])
+    
 if __name__ == '__main__':
     main()
 
