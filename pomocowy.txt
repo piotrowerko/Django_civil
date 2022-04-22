@@ -2,6 +2,7 @@ pip install python-dotenv
 pip install django
 pip install djangorestframework
 
+https://compassionate-pasteur-020efe.netlify.app/
 
 email: owerkop@o.pl
 login: imię
