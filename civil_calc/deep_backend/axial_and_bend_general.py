@@ -26,7 +26,7 @@ class GeneralAxBend(TCrReinf):
     EYD = 0.00217  # steel strain in Hook's region (FOR BOTH B500SP AND BST500S STEEL)
     _R = 20  # curve parameter (FOR BOTH B500SP AND BST500S STEEL ?)
     E_STELL = 200 * 10 ** 3  # acc. to [2]
-    E_TENDONS = 180 * 10 ** 3
+    E_TENDONS = 195 * 10 ** 3
     E_EK_TENDONS = 0.010  # max. strain in the steel of the tendons
     R_K_TENDONS = 1860  # [MPa] characteristic strength of steel of the tendons
     EPS_INIT = 0.001 * 10 ** -2
