@@ -121,10 +121,8 @@ def rect_find_reinf(request):
                                 cl_steel=cc['cl_steel'],
                                 c=cc['c'],
                                 fi=cc['fi'],
-                                no_of_bars=10,
                                 fi_s=cc['fi_s'],
                                 fi_opp=cc['fi_opp'],
-                                no_of_opp_bars=2,
                                 m_sd=cc['m_sd'])
         _dd = my_cross_sect.compute_reinf_rect()
         _ee = {
@@ -151,10 +149,8 @@ def t_sect_ben_reinf(request):
                                 cl_steel=cc['cl_steel'],
                                 c=cc['c'],
                                 fi=cc['fi'],
-                                no_of_bars=10,
                                 fi_s=cc['fi_s'],
                                 fi_opp=cc['fi_opp'],
-                                no_of_opp_bars=2,
                                 m_sd=cc['m_sd'])
         _dd = my_cross_sect.compute_reinf_T()
         if _dd[0][4] != _dd[1]:  # rectangle case
