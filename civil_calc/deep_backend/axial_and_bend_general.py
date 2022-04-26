@@ -30,7 +30,7 @@ class GeneralAxBend(TCrReinf):
     E_EK_TENDONS = 0.010  # max. strain in the steel of the tendons
     R_K_TENDONS = 1860  # [MPa] characteristic strength of steel of the tendons
     EPS_INIT = 0.001 * 10 ** -2
-    EPS_T_INIT = - 0.60 * R_K_TENDONS / E_TENDONS  # inital linear strain in tednon due to inital stressing force (uwględniono straty trwałe)
+    EPS_T_INIT = - 0.70 * R_K_TENDONS / E_TENDONS  # inital linear strain in tednon due to inital stressing force (uwględniono straty trwałe? lub nie)
     N_CONC_LAYERS = 30  # number of layers of virtual division of the concrete cross-section for the needs of numerical integrals
     CONC_L_THIC = 0.005 # concrete layer thickness of virtual division of the concrete cross-section for the needs of numerical integrals
     ETA = 0.9 # learning rate
@@ -171,7 +171,7 @@ class GeneralAxBend(TCrReinf):
 
     def _strains_in_tendons(self, eps_cur=0.0, fi_cur=0.0):
         """finds strain in steel of tendons basing on rotation and eps_linear"""
-        # WARNING: INITLIAL EPSILON MUST BE COMPUTED!!!
+        # WARNING: INITIAL EPSILON MUST BE COMPUTED!!!
         t_heights, t_areas, n_of_layers = self._tendon_geom()
         strain_tendon = [GeneralAxBend.EPS_T_INIT] * n_of_layers
         for i in range(n_of_layers):
@@ -346,9 +346,9 @@ def main():
                                 fi_opp=32, # [mm]
                                 nl_reinf_top=(1, (8, 0, 0)), # [mm] denotes number of layers of top reinforcement and corresponding numbers of rebars
                                 nl_reinf_bottom=(1, (8, 0 , 0)), # [mm] denotes number of layers of bottom reinforcement and corresponding numbers of rebars
-                                m_sd=5.5, # [MNm]
-                                n_sd=0,
-                                tendon_info=(1, (0.2, 3, 19, 150))) # (number of temdon layers, 
+                                m_sd=3, # [MNm]
+                                n_sd=-1,
+                                tendon_info=(1, (0.2, 3, 19, 150))) # (number of tendon layers, 
     #(layer height, no_of_tendons in layer, number of strands in each tendon, area if single strand))
     
     # my_rc_cross_sec1a = GeneralAxBend(name='GENERAL_CROSS-SECT_no1a',  # sprawdzenie na prostokącie symetrii odpowiedzi w przekroju symetrycznym
@@ -382,6 +382,40 @@ def main():
     #                             nl_reinf_bottom=(1, (8, 0 , 0)), # [mm] denotes number of layers of bottom reinforcement and corresponding numbers of rebars
     #                             m_sd=3, # [MNm]
     #                             n_sd=-3) # [MN]
+
+    my_rc_cross_sec2a = GeneralAxBend(name='GENERAL_CROSS-SECT_no2a',
+                                b=(0, 1.00, 2.0), # [m] width of the individual rectangles
+                                h=(0, 1.20, 0.250), # [m] height of the individual rectangles
+                                #hsl=0.20, #[m] thickness of upper slab
+                                #beff=1.2, #[m] effective width of upper slab
+                                cl_conc='C30_37',
+                                cl_steel='B500SP',
+                                c=25, # [mm]
+                                fi=25, # [mm]
+                                fi_s=12, # [mm]
+                                fi_opp=25, # [mm]
+                                nl_reinf_top=(1, (10, 0, 0)), # [mm] denotes number of layers of top reinforcement and corresponding numbers of rebars
+                                nl_reinf_bottom=(1, (10, 0 , 0)), # [mm] denotes number of layers of bottom reinforcement and corresponding numbers of rebars
+                                m_sd=3, # [MNm]
+                                n_sd=-1,
+                                tendon_info=(1, (0.2, 3, 19, 150))) # [MN]
+    
+    my_rc_cross_sec2b = GeneralAxBend(name='GENERAL_CROSS-SECT_no2a',
+                                b=(3.00, 1.00, 0), # [m] width of the individual rectangles
+                                h=(0.25, 1.20, 0), # [m] height of the individual rectangles
+                                #hsl=0.20, #[m] thickness of upper slab
+                                #beff=1.2, #[m] effective width of upper slab
+                                cl_conc='C30_37',
+                                cl_steel='B500SP',
+                                c=25, # [mm]
+                                fi=25, # [mm]
+                                fi_s=12, # [mm]
+                                fi_opp=25, # [mm]
+                                nl_reinf_top=(1, (10, 0, 0)), # [mm] denotes number of layers of top reinforcement and corresponding numbers of rebars
+                                nl_reinf_bottom=(1, (10, 0 , 0)), # [mm] denotes number of layers of bottom reinforcement and corresponding numbers of rebars
+                                m_sd=2, # [MNm]
+                                n_sd=1,
+                                tendon_info=(1, (0.5, 3, 19, 150))) # [MN]
     
     # my_rc_cross_sec3 = GeneralAxBend(name='GENERAL_CROSS-SECT_no2',
     #                             b=(1.2, 0.6, 1.2), # [m] width of the individual rectangles
@@ -399,9 +433,9 @@ def main():
     #                             m_sd=5, # [MNm]
     #                             n_sd=2) # [MN]
 
-    inter_forces_data1 = my_rc_cross_sec.find_optimal_eps_fi(30)
+    inter_forces_data1 = my_rc_cross_sec2b.find_optimal_eps_fi(60)
     eps_cur, fi_cur = inter_forces_data1[0], inter_forces_data1[1]
-    inter_forces_data = my_rc_cross_sec._internal_forces(eps_cur, fi_cur)
+    inter_forces_data = my_rc_cross_sec2b._internal_forces(eps_cur, fi_cur)
     
     GeneralAxBend.trial_plot(inter_forces_data[7], inter_forces_data[4], 'strains in steel')
     GeneralAxBend.trial_plot(inter_forces_data[7], inter_forces_data[5], 'stress in steel')
