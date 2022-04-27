@@ -1,0 +1,22 @@
+reprezentacja kablo jako grubaśnego pręta
+też jest ok.
+ALE trzeba obciążyć przekrój siłą i momentem
+gdzie: siła = pole sprężenia razy np. 0.75 RPK
+moment = siła * momośród
+ORAZ
+wytrzymałość grubaśnych prętów musi być niesymetryczna
+tzn. na rozciąganie będzie = np. 0.25 Rpk, a na ściskanie 1.25 Rpk
+
+algorytm Marcina działa tak, że zahacza funkcję odkształceń
+w miejscu 3.5 promila we włóknach np. górnych ściskanych betonu,
+daje 0 w cetroid i tyle ile wynika geometrii w stali twardej.
+LUB daje 10 promili w sprężeniu (pytanie czy to dobrze - czy uwględnia, że sprężenie
+ma już w sobie odkształcenia?).
+Następnie wylicza siłę osiowe z uzyskanych brył naprężeń.
+Porónuje ją do N_user.
+Następnie iteracyjnie zmienia wahadło (obrót zaczepionu
+u góry lub u dołu) odkształceń tak żeby N_user = N_wewnętrzne.
+Z ostatniej iteracji wyciąga bryłę naprężeń i wylicza Moment_wewn
+ i to jest jego nośność przekroju.
+
+Co w sytuacji gdy sama siła niszczy przekrój?

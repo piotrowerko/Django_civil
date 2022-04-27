@@ -39,8 +39,9 @@ class GeneralAxBend(TCrReinf):
                  cl_conc, cl_steel, 
                  c, fi, fi_s, fi_opp, 
                  nl_reinf_top, nl_reinf_bottom,
-                 m_sd, n_sd, tendon_info=None):
-        super().__init__(name, b, h, cl_conc, cl_steel, c, 
+                 m_sd, n_sd, tendon_info=None, 
+                 prestr_ef_in_mn=True):  # efekt sprężenia obecny w podanej przez użytkownika parze MN
+        super().__init__(name, b, h, cl_conc, cl_steel, c,
                         fi, fi_s, fi_opp, m_sd)
         self.n_sd = n_sd
         char_geom = CharGeom()
@@ -51,7 +52,8 @@ class GeneralAxBend(TCrReinf):
         self.nl_reinf_bottom = nl_reinf_bottom
         self.fi_init = GeneralAxBend.EPS_INIT / max(self.e_vert, self.h_top)
         self.tendon_info = tendon_info
-        
+        self.prestr_ef_in_mn = prestr_ef_in_mn
+
     @classmethod
     def alter_constr(self):
         """alternative contructor with custom reinforcement heights"""
@@ -332,6 +334,18 @@ class GeneralAxBend(TCrReinf):
                 break
         return eps_new, fi_new, n_new, m_new
 
+    def alter_n_m(self):
+        """"alters M and N if M and N incudes prestressing effects from FE solution envelopes"""
+        t_heights, t_areas, n_of_layers = self._tendon_geom()
+        self.n_sd -= 0.70 * self.R_K_TENDONS * sum(t_areas)
+        stress_in_t = len(t_heights) * [0.70 * self.R_K_TENDONS]
+        forces_in_t = [stress_in_t[i] * t_areas[i] \
+            for i in range(len(stress_in_t))]
+        moments_in_t = [forces_in_t[i] * t_heights[i] \
+            for i in range(len(stress_in_t))]
+        self.m_sd -= sum(moments_in_t)
+        return self.m_sd, self.n_sd
+
 def main():
     my_rc_cross_sec = GeneralAxBend(name='GENERAL_CROSS-SECT_no1',
                                 b=(0, 1.0, 0), # [m] width of the individual rectangles, b[0] and h[0] are the bottom plate
@@ -346,10 +360,11 @@ def main():
                                 fi_opp=32, # [mm]
                                 nl_reinf_top=(1, (8, 0, 0)), # [mm] denotes number of layers of top reinforcement and corresponding numbers of rebars
                                 nl_reinf_bottom=(1, (8, 0 , 0)), # [mm] denotes number of layers of bottom reinforcement and corresponding numbers of rebars
-                                m_sd=3, # [MNm]
-                                n_sd=-1,
-                                tendon_info=(1, (0.2, 3, 19, 150))) # (number of tendon layers, 
+                                m_sd=0, # [MNm]
+                                n_sd=0,
+                                tendon_info=(1, (0.2, 3, 19, 150)), # (number of tendon layers, 
     #(layer height, no_of_tendons in layer, number of strands in each tendon, area if single strand))
+                                prestr_ef_in_mn = True)
     
     # my_rc_cross_sec1a = GeneralAxBend(name='GENERAL_CROSS-SECT_no1a',  # sprawdzenie na prostokącie symetrii odpowiedzi w przekroju symetrycznym
     #                             b=(0, 1.0, 0), # [m] width of the individual rectangles
@@ -414,8 +429,9 @@ def main():
                                 nl_reinf_top=(1, (10, 0, 0)), # [mm] denotes number of layers of top reinforcement and corresponding numbers of rebars
                                 nl_reinf_bottom=(1, (10, 0 , 0)), # [mm] denotes number of layers of bottom reinforcement and corresponding numbers of rebars
                                 m_sd=2, # [MNm]
-                                n_sd=1,
-                                tendon_info=(1, (0.5, 3, 19, 150))) # [MN]
+                                n_sd=1, # [MN]
+                                tendon_info=(1, (0.5, 3, 19, 150)),
+                                prestr_ef_in_mn=True) # [MN]
     
     # my_rc_cross_sec3 = GeneralAxBend(name='GENERAL_CROSS-SECT_no2',
     #                             b=(1.2, 0.6, 1.2), # [m] width of the individual rectangles
@@ -433,10 +449,15 @@ def main():
     #                             m_sd=5, # [MNm]
     #                             n_sd=2) # [MN]
 
+    cross_sect = my_rc_cross_sec2b
+    print('ppppppppp', cross_sect.m_sd, cross_sect.n_sd)
+    if cross_sect.prestr_ef_in_mn:
+        print('ppppppppp', cross_sect.alter_n_m())
     inter_forces_data1 = my_rc_cross_sec2b.find_optimal_eps_fi(60)
     eps_cur, fi_cur = inter_forces_data1[0], inter_forces_data1[1]
     inter_forces_data = my_rc_cross_sec2b._internal_forces(eps_cur, fi_cur)
-    
+
+
     GeneralAxBend.trial_plot(inter_forces_data[7], inter_forces_data[4], 'strains in steel')
     GeneralAxBend.trial_plot(inter_forces_data[7], inter_forces_data[5], 'stress in steel')
     GeneralAxBend.trial_plot(inter_forces_data[7], inter_forces_data[6], 'forces in steel')
