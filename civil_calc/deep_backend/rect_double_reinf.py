@@ -14,8 +14,12 @@ class RectCrSectDoubleR(RectCrSectSingle):
     """bending of rectangular cross section with double reinforcement:
     evaluation of bending moment capasity [kNm];
     Lapko Jensen fig. 4.17b"""
-    def __init__(self, name, b, h, cl_conc, cl_steel, c, fi, fi_s, fi_opp, no_of_bars=2, no_of_opp_bars=2):
-        super().__init__(name, b, h, cl_conc, cl_steel, c, fi, fi_s)
+    def __init__(self, name, b, h, cl_conc, cl_steel, 
+                 c, fi, fi_s, 
+                 fi_opp, no_of_bars=2, no_of_opp_bars=2):
+        super().__init__(name, b, h, 
+                         cl_conc, cl_steel, c, 
+                         fi, fi_s, no_of_bars)
         self.fi_opp = fi_opp  # diameter of second package of reinforcement
         self.no_of_opp_bars = no_of_opp_bars
 
@@ -64,16 +68,16 @@ class RectCrSectDoubleR(RectCrSectSingle):
 
 def main():
     my_double_reinf_cross_sec = RectCrSectDoubleR(name='moj_przekr_prost',
-                                                  b=0.6,
-                                                  h=1,
+                                                  b=0.7,
+                                                  h=1.2,
                                                   cl_conc='C30_37',
                                                   cl_steel='B500SP',
-                                                  c=30,
-                                                  fi=20,
-                                                  no_of_bars=10,
-                                                  fi_s=12,
+                                                  c=40,
+                                                  fi=32,
+                                                  no_of_bars=7,
+                                                  fi_s=10,
                                                   fi_opp=16,
-                                                  no_of_opp_bars=2)
+                                                  no_of_opp_bars=4)
     results = my_double_reinf_cross_sec.compute_m_rd_double_r()
     print(f'ksi eff:  {results[1]}')
     print(f'x_eff:  {results[2]}')
