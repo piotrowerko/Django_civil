@@ -325,12 +325,15 @@ class GeneralAxBend(TCrReinf):
         for i in range(n_it):
             eps_new, fi_new, n_new, m_new = self._update_eps_and_fi(eps_cur=eps_new, fi_cur=fi_new, n_cur=n_new, m_cur=m_new)
             print(n_new, m_new, i, eps_new, fi_new)
-            # if abs(eps_new) > 0.1 or abs(fi_new) > 0.1:
-            #     eps_new = np.random.uniform(-0.001, 0.001)
-            #     fi_new = np.random.uniform(-0.001, 0.001)
-            check1 = abs(abs(n_new) - abs(self.n_sd)) / (abs(self.n_sd) + 0.005)
-            check2 = abs(abs(m_new) - abs(self.m_sd)) / (abs(self.m_sd) + 0.005)
-            if check1 < 0.01 and check2 < 0.01:
+            ## if abs(eps_new) > 0.1 or abs(fi_new) > 0.1:
+            ##     eps_new = np.random.uniform(-0.001, 0.001)
+            ##     fi_new = np.random.uniform(-0.001, 0.001)
+            # check1 = abs(abs(n_new) - abs(self.n_sd)) / (abs(self.n_sd) + 0.005)
+            # check2 = abs(abs(m_new) - abs(self.m_sd)) / (abs(self.m_sd) + 0.005)
+            # if check1 < 0.01 and check2 < 0.01:
+            check1 = abs(abs(n_new) - abs(self.n_sd))
+            check2 = abs(abs(m_new) - abs(self.m_sd))
+            if check1 < 0.001 and check2 < 0.001:
                 break
         return eps_new, fi_new, n_new, m_new
 
@@ -403,7 +406,7 @@ def main():
                                 h=(0, 1.20, 0.250), # [m] height of the individual rectangles
                                 #hsl=0.20, #[m] thickness of upper slab
                                 #beff=1.2, #[m] effective width of upper slab
-                                cl_conc='C30_37',
+                                cl_conc='C35_45',
                                 cl_steel='B500SP',
                                 c=25, # [mm]
                                 fi=25, # [mm]
@@ -413,14 +416,15 @@ def main():
                                 nl_reinf_bottom=(1, (10, 0 , 0)), # [mm] denotes number of layers of bottom reinforcement and corresponding numbers of rebars
                                 m_sd=3, # [MNm]
                                 n_sd=-1,
-                                tendon_info=(1, (0.2, 3, 19, 150))) # [MN]
+                                tendon_info=(1, (0.2, 3, 19, 150)),
+                                prestr_ef_in_mn=False)
     
     my_rc_cross_sec2b = GeneralAxBend(name='GENERAL_CROSS-SECT_no2a',
                                 b=(3.00, 1.00, 0), # [m] width of the individual rectangles
                                 h=(0.25, 1.20, 0), # [m] height of the individual rectangles
                                 #hsl=0.20, #[m] thickness of upper slab
                                 #beff=1.2, #[m] effective width of upper slab
-                                cl_conc='C30_37',
+                                cl_conc='C35_45',
                                 cl_steel='B500SP',
                                 c=25, # [mm]
                                 fi=25, # [mm]
@@ -431,7 +435,7 @@ def main():
                                 m_sd=2, # [MNm]
                                 n_sd=1, # [MN]
                                 tendon_info=(1, (0.5, 3, 19, 150)),
-                                prestr_ef_in_mn=True) # [MN]
+                                prestr_ef_in_mn=False) # [MN]
     
     # my_rc_cross_sec3 = GeneralAxBend(name='GENERAL_CROSS-SECT_no2',
     #                             b=(1.2, 0.6, 1.2), # [m] width of the individual rectangles
@@ -448,14 +452,50 @@ def main():
     #                             nl_reinf_bottom=(1, (8, 0 , 0)), # [mm] denotes number of layers of bottom reinforcement and corresponding numbers of rebars
     #                             m_sd=5, # [MNm]
     #                             n_sd=2) # [MN]
+    
+    my_rc_cross_sec3a = GeneralAxBend(name='GENERAL_CROSS-SECT_no3a',
+                                b=(2, 1.2, 3), # [m] width of the individual rectangles
+                                h=(0.25, 1.20, 0.25), # [m] height of the individual rectangles
+                                #hsl=0.20, #[m] thickness of upper slab
+                                #beff=1.2, #[m] effective width of upper slab
+                                cl_conc='C35_45',
+                                cl_steel='B500SP',
+                                c=25, # [mm]
+                                fi=25, # [mm]
+                                fi_s=12, # [mm]
+                                fi_opp=25, # [mm]
+                                nl_reinf_top=(1, (10, 0, 0)), # [mm] denotes number of layers of top reinforcement and corresponding numbers of rebars
+                                nl_reinf_bottom=(1, (10, 0 , 0)), # [mm] denotes number of layers of bottom reinforcement and corresponding numbers of rebars
+                                m_sd=3, # [MNm]
+                                n_sd=2, # [MN]
+                                tendon_info=(1, (0.5, 3, 20, 150)),
+                                prestr_ef_in_mn=False) # [MN]
+    
+    my_rc_cross_sec3b = GeneralAxBend(name='GENERAL_CROSS-SECT_no3b',
+                                b=(3, 1.2, 3), # [m] width of the individual rectangles
+                                h=(0.25, 1.20, 0.25), # [m] height of the individual rectangles
+                                #hsl=0.20, #[m] thickness of upper slab
+                                #beff=1.2, #[m] effective width of upper slab
+                                cl_conc='C35_45',
+                                cl_steel='B500SP',
+                                c=25, # [mm]
+                                fi=25, # [mm]
+                                fi_s=12, # [mm]
+                                fi_opp=25, # [mm]
+                                nl_reinf_top=(1, (20, 0, 0)), # [mm] denotes number of layers of top reinforcement and corresponding numbers of rebars
+                                nl_reinf_bottom=(1, (10, 0 , 0)), # [mm] denotes number of layers of bottom reinforcement and corresponding numbers of rebars
+                                m_sd=-4, # [MNm]
+                                n_sd=-2, # [MN]
+                                tendon_info=(1, (0.200, 3, 20, 150)),
+                                prestr_ef_in_mn=False) # [MN]
 
-    cross_sect = my_rc_cross_sec2b
+    cross_sect = my_rc_cross_sec3b
     print('ppppppppp', cross_sect.m_sd, cross_sect.n_sd)
     if cross_sect.prestr_ef_in_mn:
         print('ppppppppp', cross_sect.alter_n_m())
-    inter_forces_data1 = my_rc_cross_sec2b.find_optimal_eps_fi(60)
+    inter_forces_data1 = cross_sect.find_optimal_eps_fi(100)
     eps_cur, fi_cur = inter_forces_data1[0], inter_forces_data1[1]
-    inter_forces_data = my_rc_cross_sec2b._internal_forces(eps_cur, fi_cur)
+    inter_forces_data = cross_sect._internal_forces(eps_cur, fi_cur)
 
 
     GeneralAxBend.trial_plot(inter_forces_data[7], inter_forces_data[4], 'strains in steel')
