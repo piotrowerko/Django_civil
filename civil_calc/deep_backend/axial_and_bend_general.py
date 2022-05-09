@@ -85,10 +85,10 @@ class GeneralAxBend(TCrReinf):
         self._E_cm = float(conc_data[class_ind][9])
         return self._E_cm  # kluczowe pytanie - czym się różni atrybut od właściwości klasy (odp: wła. ma setter i deleter)
 
-    def _initial_rotation(self):
-        # ROTACJA TAKA ŻEBY DAŁA JEDNĄ SETNĄ PROMILA W SKRAJNYCH WŁÓKNACH
-        fi_init = GeneralAxBend.EPS_INIT / max(self.e_vert, self.h_top)
-        return fi_init
+    # def _initial_rotation(self):
+    #     # ROTACJA TAKA ŻEBY DAŁA JEDNĄ SETNĄ PROMILA W SKRAJNYCH WŁÓKNACH
+    #     fi_init = GeneralAxBend.EPS_INIT / max(self.e_vert, self.h_top)
+    #     return fi_init
 
     def _conc_layers(self):
         """finds heights and number of layers of virtual division in the concrete cross-section"""
@@ -109,9 +109,9 @@ class GeneralAxBend(TCrReinf):
             conc_lay_areas.append(GeneralAxBend.CONC_L_THIC * conc_lay_widths[i])
         return n_layers, conc_lay_heights, conc_lay_widths, conc_lay_areas
 
-    def _strains_in_conc(self, eps_cur=0.0, fi_cur=0.0):
+    def _strains_in_conc(self, eps_cur=0.0, fi_cur=0.0, conc_geom=None):
         """finds strain in concrete layers basing on rotation and eps_linear"""
-        n_layers, conc_lay_heights, conc_lay_widths, conc_lay_areas = self._conc_layers()
+        n_layers, conc_lay_heights, conc_lay_widths, conc_lay_areas = conc_geom
         strain_conc = [(conc_lay_heights[i] * fi_cur + eps_cur) for i in range(n_layers)]
         return strain_conc, n_layers, conc_lay_heights, conc_lay_widths, conc_lay_areas
 
@@ -128,9 +128,9 @@ class GeneralAxBend(TCrReinf):
             sigma_conc = strain_conc * (f_cd / GeneralAxBend.ECU2)
         return sigma_conc
 
-    def _stress_in_conc(self, eps_cur=0.0, fi_cur=0.0):
+    def _stress_in_conc(self, eps_cur=0.0, fi_cur=0.0, conc_geom=None):
         """returns stresses in concrete layers"""
-        strain_conc, n_layers, conc_lay_heights, conc_lay_widths, conc_lay_areas = self._strains_in_conc(eps_cur, fi_cur)
+        strain_conc, n_layers, conc_lay_heights, conc_lay_widths, conc_lay_areas = self._strains_in_conc(eps_cur, fi_cur, conc_geom)
         stress_conc = [self._stress_strain_conc(el) for el in strain_conc]
         return stress_conc, n_layers, conc_lay_heights, conc_lay_widths, conc_lay_areas, strain_conc
 
@@ -163,18 +163,18 @@ class GeneralAxBend(TCrReinf):
         t_rel_heights = self._relative_heights(tend_heights)
         return t_rel_heights, tend_areas, no_of_layers
     
-    def _strains_in_steel(self, eps_cur=0.0, fi_cur=0.0):
+    def _strains_in_steel(self, eps_cur=0.0, fi_cur=0.0, reinf_geom=None):
         """finds strain in steel layers basing on rotation and eps_linear"""
-        r_heights, reinf_areas, n_of_layers = self._reinf_geom()
+        r_heights, reinf_areas, n_of_layers = reinf_geom
         strain_steel = [0] * n_of_layers
         for i in range(n_of_layers):
             strain_steel[i] = (r_heights[i] * fi_cur) + eps_cur
         return strain_steel, r_heights, reinf_areas
 
-    def _strains_in_tendons(self, eps_cur=0.0, fi_cur=0.0):
+    def _strains_in_tendons(self, eps_cur=0.0, fi_cur=0.0, tend_geom=None):
         """finds strain in steel of tendons basing on rotation and eps_linear"""
         # WARNING: INITIAL EPSILON MUST BE COMPUTED!!!
-        t_heights, t_areas, n_of_layers = self._tendon_geom()
+        t_heights, t_areas, n_of_layers = tend_geom
         strain_tendon = [GeneralAxBend.EPS_T_INIT] * n_of_layers
         for i in range(n_of_layers):
             strain_tendon[i] += (t_heights[i] * fi_cur) + eps_cur
@@ -213,15 +213,15 @@ class GeneralAxBend(TCrReinf):
         sigma_tendon = E_tendons * strain_tendon
         return sigma_tendon, e_ud
 
-    def _stress_in_steel(self, eps_cur=0.0, fi_cur=0.0):
+    def _stress_in_steel(self, eps_cur=0.0, fi_cur=0.0, reinf_geom=None):
         """returns stresses in reinforcement layers"""
-        strain_steel, r_heights, reinf_areas = self._strains_in_steel(eps_cur, fi_cur)
+        strain_steel, r_heights, reinf_areas = self._strains_in_steel(eps_cur, fi_cur, reinf_geom)
         stress_steel = [self._stress_strain_steel(el)[0] for el in strain_steel]
         return stress_steel, r_heights, reinf_areas, strain_steel
     
-    def _stress_in_tendons(self, eps_cur=0.0, fi_cur=0.0):
+    def _stress_in_tendons(self, eps_cur=0.0, fi_cur=0.0, tend_geom=None):
         """returns stresses in tendons layers"""
-        strain_t, t_heights, t_areas = self._strains_in_tendons(eps_cur, fi_cur)
+        strain_t, t_heights, t_areas = self._strains_in_tendons(eps_cur, fi_cur, tend_geom)
         stress_tend = [self._stress_strain_tendons(el)[0] for el in strain_t]
         return stress_tend, t_heights, t_areas, strain_t
     
@@ -231,14 +231,14 @@ class GeneralAxBend(TCrReinf):
         rel_heights = [(i - self.e_vert) for i in heights]
         return rel_heights
 
-    def _internal_forces(self, eps_cur, fi_cur):
+    def _internal_forces(self, eps_cur, fi_cur, conc_geom, reinf_geom, tend_geom):
         """numerical integral for internal axial force and bending moment computation;
         takes given strain and rotation,
         returns corresponding axial force abd bending moment"""
-        _a = self._stress_in_conc(eps_cur, fi_cur)
+        _a = self._stress_in_conc(eps_cur, fi_cur, conc_geom)
         stress_in_conc, conc_lay_heights, conc_areas, strain_conc = _a[0], _a[2], _a[4], _a[5]
-        stress_in_steel, r_heights, steel_areas, strain_steel = self._stress_in_steel(eps_cur, fi_cur)
-        stress_in_t, t_heights, t_areas, strain_t = self._stress_in_tendons(eps_cur, fi_cur)
+        stress_in_steel, r_heights, steel_areas, strain_steel = self._stress_in_steel(eps_cur, fi_cur, reinf_geom)
+        stress_in_t, t_heights, t_areas, strain_t = self._stress_in_tendons(eps_cur, fi_cur, tend_geom)
         # suma pole_plastra*naprezenieplastra
         # suma pole_warw_pretow*naprezenia_w_wawie-pretow
         forces_in_conc = [stress_in_conc[i] * conc_areas[i] \
@@ -269,25 +269,27 @@ class GeneralAxBend(TCrReinf):
                 forces_in_conc, conc_lay_heights, \
                 bending_moment
 
-    def _get_n1_and_m1(self):
+    def _get_n1_and_m1(self, conc_geom, reinf_geom):
         eps_init = GeneralAxBend.EPS_INIT
-        n1_e, m1_e = self._internal_forces(eps_init, 0)[0], self._internal_forces(eps_init, 0)[-1]
+        n1_e, m1_e = self._internal_forces(eps_init, 0, conc_geom, reinf_geom)[0], self._internal_forces(eps_init, 0, conc_geom, reinf_geom)[-1]
         fi_init = self._initial_rotation()
-        n1_fi, m1_fi = self._internal_forces(0, fi_init)[0], self._internal_forces(0, fi_init)[-1]
+        n1_fi, m1_fi = self._internal_forces(0, fi_init, conc_geom, reinf_geom)[0], self._internal_forces(0, fi_init, conc_geom, reinf_geom)[-1]
         return n1_e, m1_e, n1_fi, m1_fi
     
-    def _get_eq_coeff_array(self, eps_cur=0, fi_cur=0, n_cur=0, m_cur=0, n_user=0, m_user=0):
+    def _get_eq_coeff_array(self, eps_cur=0, fi_cur=0, n_cur=0, m_cur=0, n_user=0, m_user=0, 
+                            conc_geom=None, reinf_geom=None, tend_geom=None):
         """returns np array with all moments and axial forces
         for computation of linear eq. system in search for corrections of fi and eps"""
         eps_init = GeneralAxBend.EPS_INIT
-        fi_init = self._initial_rotation()
-        n_m_eps_plus_deps_fi_cur = self._internal_forces(eps_cur + eps_init, fi_cur)[0], \
-            self._internal_forces(eps_cur + eps_init, fi_cur)[-1]
+        #fi_init = self._initial_rotation()
+        fi_init = self.fi_init
+        n_m_eps_plus_deps_fi_cur = self._internal_forces(eps_cur + eps_init, fi_cur, conc_geom, reinf_geom, tend_geom)[0], \
+            self._internal_forces(eps_cur + eps_init, fi_cur, conc_geom, reinf_geom, tend_geom)[-1]
         np_one = np.asanyarray(n_m_eps_plus_deps_fi_cur)
-        n_m_eps_fi_cur_plus_dfi =  self._internal_forces(eps_cur, fi_cur + fi_init)[0], \
-            self._internal_forces(eps_cur, fi_cur + fi_init)[-1]
+        n_m_eps_fi_cur_plus_dfi =  self._internal_forces(eps_cur, fi_cur + fi_init, conc_geom, reinf_geom, tend_geom)[0], \
+            self._internal_forces(eps_cur, fi_cur + fi_init, conc_geom, reinf_geom, tend_geom)[-1]
         np_two = np.asanyarray(n_m_eps_fi_cur_plus_dfi)
-        _n_m_cur = self._internal_forces(eps_cur, fi_cur)
+        _n_m_cur = self._internal_forces(eps_cur, fi_cur, conc_geom, reinf_geom, tend_geom)
         n_m_cur = _n_m_cur[0], _n_m_cur[-1]
         np_three = np.asanyarray(n_m_cur)
         np_l_array = np.zeros(shape=(2,2))
@@ -300,21 +302,22 @@ class GeneralAxBend(TCrReinf):
         np_r_array[1] = m_user - m_cur
         return  np_l_array, np_r_array, eps_init, fi_init
 
-    def _update_eps_and_fi(self, eps_cur=0, fi_cur=0, n_cur=0, m_cur=0):
+    def _update_eps_and_fi(self, eps_cur=0, fi_cur=0, n_cur=0, m_cur=0, conc_geom=None, reinf_geom=None, tend_geom=None):
         n_user = self.n_sd
         m_user = self.m_sd
-        np_l_array, np_r_array, eps_init, fi_init = self._get_eq_coeff_array(eps_cur, fi_cur, n_cur, m_cur, n_user, m_user)
+        np_l_array, np_r_array, eps_init, fi_init = self._get_eq_coeff_array(eps_cur, fi_cur, n_cur, m_cur, n_user, m_user, 
+                                                                             conc_geom, reinf_geom, tend_geom)
         le_lfi = self.ETA * self._solve_two_eq(np_l_array, np_r_array)
         # le_lfi = self._solve_two_eq(np_l_array, np_r_array)
         # eps_new = eps_cur + math.copysign(GeneralAxBend.EPS_INIT, le_lfi[0])
         # fi_new = fi_cur + math.copysign(self.fi_init, le_lfi[1])
         eps_new = eps_cur + le_lfi[0] * eps_init
         fi_new = fi_cur + le_lfi[1] * fi_init 
-        _c =  self._internal_forces(eps_new, fi_new)
+        _c =  self._internal_forces(eps_new, fi_new, conc_geom, reinf_geom, tend_geom)
         n_new, m_new = _c[0], _c[-1]
         return eps_new, fi_new, n_new, m_new
     
-    def find_optimal_eps_fi(self, n_it):
+    def find_optimal_eps_fi(self, n_it, conc_geom, reinf_geom, tend_geom):
         """search iteratively for best values
         of eps and fi so that M_final, and N_final were
         close to M_sd and N_sd"""
@@ -323,7 +326,8 @@ class GeneralAxBend(TCrReinf):
         n_new = 0
         m_new = 0
         for i in range(n_it):
-            eps_new, fi_new, n_new, m_new = self._update_eps_and_fi(eps_cur=eps_new, fi_cur=fi_new, n_cur=n_new, m_cur=m_new)
+            eps_new, fi_new, n_new, m_new = self._update_eps_and_fi(eps_cur=eps_new, fi_cur=fi_new, n_cur=n_new, m_cur=m_new, 
+                                                                    conc_geom=conc_geom, reinf_geom=reinf_geom, tend_geom=tend_geom)
             print(n_new, m_new, i, eps_new, fi_new)
             ## if abs(eps_new) > 0.1 or abs(fi_new) > 0.1:
             ##     eps_new = np.random.uniform(-0.001, 0.001)
@@ -337,9 +341,9 @@ class GeneralAxBend(TCrReinf):
                 break
         return eps_new, fi_new, n_new, m_new
 
-    def alter_n_m(self):
+    def alter_n_m(self, tend_geom):
         """"alters M and N if M and N incudes prestressing effects from FE solution envelopes"""
-        t_heights, t_areas, n_of_layers = self._tendon_geom()
+        t_heights, t_areas, n_of_layers = tend_geom
         self.n_sd -= 0.70 * self.R_K_TENDONS * sum(t_areas)
         stress_in_t = len(t_heights) * [0.70 * self.R_K_TENDONS]
         forces_in_t = [stress_in_t[i] * t_areas[i] \
@@ -490,13 +494,14 @@ def main():
                                 prestr_ef_in_mn=False) # [MN]
 
     cross_sect = my_rc_cross_sec3b
-    print('ppppppppp', cross_sect.m_sd, cross_sect.n_sd)
+    tend_geom = cross_sect._tendon_geom()
     if cross_sect.prestr_ef_in_mn:
-        print('ppppppppp', cross_sect.alter_n_m())
-    inter_forces_data1 = cross_sect.find_optimal_eps_fi(100)
+        cross_sect.alter_n_m()
+    conc_geom = cross_sect._conc_layers()
+    reinf_geom = cross_sect._reinf_geom()
+    inter_forces_data1 = cross_sect.find_optimal_eps_fi(100, conc_geom, reinf_geom, tend_geom)
     eps_cur, fi_cur = inter_forces_data1[0], inter_forces_data1[1]
-    inter_forces_data = cross_sect._internal_forces(eps_cur, fi_cur)
-
+    inter_forces_data = cross_sect._internal_forces(eps_cur, fi_cur, conc_geom, reinf_geom, tend_geom)
 
     GeneralAxBend.trial_plot(inter_forces_data[7], inter_forces_data[4], 'strains in steel')
     GeneralAxBend.trial_plot(inter_forces_data[7], inter_forces_data[5], 'stress in steel')
@@ -510,11 +515,11 @@ def main():
     # #print('pure in forces:', inter_forces_data[0], inter_forces_data[-1])
     # # inter_forces_data1 = my_rc_cross_sec._update_eps_and_fi(eps_cur=-0.13863684678772847, fi_cur=0.16516223687652937, n_cur=-4.282748843304599, m_cur=1.918676231783936)
     # # print('pure in forces:', inter_forces_data1)
-    
-    print(my_rc_cross_sec._tendon_geom())
-    print(inter_forces_data[8])
-    print(inter_forces_data[11])
-    
+
+    # print(my_rc_cross_sec._tendon_geom())
+    # print(inter_forces_data[8])
+    # print(inter_forces_data[11])
+
 if __name__ == '__main__':
     main()
 
