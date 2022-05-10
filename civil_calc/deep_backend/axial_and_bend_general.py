@@ -79,7 +79,7 @@ class GeneralAxBend(TCrReinf):
     @property
     def E_cm(self):
         """returns E_cm value according to EC"""
-        conc_data = self._load_concrete(file_path='concrete_ec.csv')
+        conc_data = self.load_concrete(file_path='concrete_ec.csv')
         conc_class_names = [el[0] for el in conc_data]
         class_ind = conc_class_names.index(self.cl_conc)
         self._E_cm = float(conc_data[class_ind][9])
