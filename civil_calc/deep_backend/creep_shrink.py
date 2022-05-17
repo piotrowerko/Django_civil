@@ -1,4 +1,5 @@
 import math
+from tkinter import E
 
 from . rect_single_reinf import RectCrSectSingle
 
@@ -17,18 +18,19 @@ class CreepShrink():
         self.cement_class = cement_class  # Cement type (class_S, class_N, class_R)
         self.ts = ts  # Age of concrete at end of curing
         self.h0 = 1000 * 2 * ac / u
-        self.fcm = self.get_fcm
+        self.fcm = self.get_fc(csv_row=4)
+        self.fck = self.get_fc(csv_row=1)
     
-    @property
-    def get_fcm(self):
-        """returns f_cd * eta value according to EC"""
+    #@property
+    def get_fc(self, csv_row=4):
+        """returns chosen f_c value according to EC"""
         conc_data = RectCrSectSingle.load_concrete(
             file_path='civil_calc/deep_backend/concrete_ec.csv')
         conc_class_names = [el[0] for el in conc_data]
         class_ind = conc_class_names.index(self.cl_conc)
-        fcm = float(conc_data[class_ind][4])
-        return fcm
-    
+        fc = float(conc_data[class_ind][csv_row])
+        return fc
+
     def kh(self, h0):
         """returns kh coefficient"""
         if h0 >= 500:
@@ -164,6 +166,34 @@ class CreepShrink():
         return eps_cd_t
     
     # odkształcenia od skurczu autogenicznego
+
+    def eps_ca_inf(self):
+        """returns autogenous shrinkage strain at infinite time
+        EN1992-1-1 equation 3.11"""
+        eps_ca_inf = 2.5 * (self.fck - 10) * 10 ** -6
+        return eps_ca_inf
+    
+    def eps_ca_t(self, t):
+        """returns autogenous shrinkage strain at given time
+        EN1992-1-1 equation 3.12"""
+        eps_ca_inf = self.eps_ca_inf()
+        beta_as_t = 1 - math.e ** (-0.2 * t ** 0.5)
+        eps_ca = eps_ca_inf * beta_as_t
+        return eps_ca
+    
+    # całkowite odkształcenie skurczowe 
+    
+    def eps_cs_t(self, t):
+        """total shrinkage strain εcs is composed
+        from the drying shrinkage strain εcd and the autogenous shrinkage strain 
+        εc as specified in EN1992-1-1 eq. 3.8:"""
+        eps_ca_t = self.eps_ca_t(t)
+        eps_cd_t = self.eps_cd_t(t)
+        eps_cs_t = eps_ca_t + eps_cd_t
+        return eps_cs_t
+    
+    # printer
+    
     
 
 def main():
@@ -192,8 +222,12 @@ def main():
     print(f'fi_t_t0 = {my_member.fi_t_t0(100 * 365, alphas, t0r)}')
     print(f'beta_ds_t0_ts = {my_member.beta_ds_t_ts(t=my_member.t0)}')
     print(f'eps_cd_t0 = {my_member.eps_cd_t(t=my_member.t0)}')
-    print(f'beta_ds_t100_ts = {my_member.beta_ds_t_ts(t=356*100)}')
+    print(f'beta_ds_t100_ts = {my_member.beta_ds_t_ts(t=365*100)}')
     print(f'eps_cd_t100 = {my_member.eps_cd_t(t=365*100)}')
+    print(f'eps_ca_inf =  {my_member.eps_ca_inf()}')
+    print(f'eps_ca_t=14 = {my_member.eps_ca_t(t=my_member.t0)}')
+    print(f'eps_cs_t=14 = {my_member.eps_cs_t(t=my_member.t0)}')
+    print(f'eps_cs_t=14 = {my_member.eps_cs_t(t=365*100)}')
     
 if __name__ == '__main__':
     main()
