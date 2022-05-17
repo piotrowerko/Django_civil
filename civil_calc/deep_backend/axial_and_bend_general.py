@@ -342,7 +342,8 @@ class GeneralAxBend(TCrReinf):
         return eps_new, fi_new, n_new, m_new
 
     def alter_n_m(self, tend_geom):
-        """"alters M and N if M and N incudes prestressing effects from FE solution envelopes"""
+        """"alters M and N if M and N incudes 
+        prestressing effects from FE solution envelopes"""
         t_heights, t_areas, n_of_layers = tend_geom
         self.n_sd -= 0.70 * self.R_K_TENDONS * sum(t_areas)
         stress_in_t = len(t_heights) * [0.70 * self.R_K_TENDONS]

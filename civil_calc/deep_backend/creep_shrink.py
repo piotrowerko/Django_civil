@@ -1,5 +1,6 @@
 import math
-from tkinter import E
+import numpy as np
+import matplotlib.pyplot as plt
 
 from . rect_single_reinf import RectCrSectSingle
 
@@ -136,7 +137,7 @@ class CreepShrink():
             / (t - self.ts + 0.04 * self.h0 ** (3 / 2))
         return beta_ds_t_ts
 
-        # nominalne odkształcenie skurczu przy wysychaniu
+    # nominalne odkształcenie skurczu przy wysychaniu
     def eps_cd_0(self, cement_class):
         """returns basic drying shrinkage strain
         source: eq. B.11 s.186 in EN-1992-1-1:2004+AC2008"""
@@ -191,16 +192,30 @@ class CreepShrink():
         eps_cd_t = self.eps_cd_t(t)
         eps_cs_t = eps_ca_t + eps_cd_t
         return eps_cs_t
-    
-    # printer
-    
-    
+
+    def compute_arrays(self, alphas, t0r):
+        """returns 3 arrays: 
+        1. time [days]
+        2. Creep coefficient [-]
+        3. Shrinkage strain [-]*10**-5"""
+        time_arr = np.arange(1, 365*100, 1, dtype=np.float64)
+        creep_arr = np.zeros([self.t0])
+        shrink_arr = np.array([])
+        for t in time_arr:
+            if t > self.t0:
+                creep_arr = np.append(creep_arr, [self.fi_t_t0(t, alphas, t0r)])
+            shrink_arr = np.append(shrink_arr, [self.eps_cs_t(t)])
+        return time_arr, creep_arr, shrink_arr
 
 def main():
-    my_member = CreepShrink(name='my_member1', cl_conc='C50_60', 
-                            ac=4.41, u=9.78, 
-                            t0=14, temp=20, rh=80,
-                            cement_class='R', ts=3)
+    # my_member = CreepShrink(name='my_member1', cl_conc='C50_60', 
+    #                         ac=4.41, u=9.78, 
+    #                         t0=14, temp=20, rh=80,
+    #                         cement_class='R', ts=3)
+    my_member = CreepShrink(name='my_member1', cl_conc='C30_37', 
+                        ac=1, u=2, 
+                        t0=7, temp=20, rh=70,
+                        cement_class='N', ts=7)
     print(f'h0 = {my_member.h0}')
     print(f'kh = {my_member.kh(my_member.h0)}')
     print(f'beta_rh = {my_member._beta_rh(my_member.rh)}')
@@ -228,6 +243,27 @@ def main():
     print(f'eps_ca_t=14 = {my_member.eps_ca_t(t=my_member.t0)}')
     print(f'eps_cs_t=14 = {my_member.eps_cs_t(t=my_member.t0)}')
     print(f'eps_cs_t=14 = {my_member.eps_cs_t(t=365*100)}')
+    
+    time_arr, creep_arr, shrink_arr = my_member.compute_arrays(alphas, t0r)
+    
+    fig0, ax0 = plt.subplots()
+    fig0.set_size_inches(9, 6)
+    ax1 = ax0.twinx()
+    pp1 = ax0.plot(time_arr, creep_arr, label='Creep coef. development curvee')
+    pp2 = ax1.plot(time_arr, shrink_arr*100000, label='Shrinkage development curve [x10^-5]', color='orange')
+    pp = pp1 + pp2
+    ax0.set_title('Creep and shrinkage development curves')
+    ax0.xaxis.grid(True, which='major')
+    ax0.yaxis.grid(True, which='major')
+    ax0.set_xlabel('Time [days]', fontsize=15)
+    ax0.set_ylabel('Creep coeff. [-]', fontsize=15)
+    ax1.set_ylabel('Shrinkage strain x10**-5 [-]', fontsize=15)
+    #plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=2, fontsize=10)
+    labs = [l.get_label() for l in pp]
+    ax0.legend(pp, labs, loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=2, fontsize=13)
+    ax0.tick_params(labelsize=15)
+    ax1.tick_params(labelsize=15)
+    plt.show()
     
 if __name__ == '__main__':
     main()
