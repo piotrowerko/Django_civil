@@ -72,7 +72,7 @@ class TCrReinf(RectCrReinf):
                 a_s2 = a_s13
                 a_s1 = a_s11 + a_s12 + a_s13
             n_s1 = math.ceil(a_s1 / (math.pi * (self.fi / 1000) ** 2 / 4 ))
-            n_s2 = math.ceil(a_s2 / (math.pi * (self.fi / 1000) ** 2 / 4 ))
+            n_s2 = math.ceil(a_s2 / (math.pi * (self.fi_opp / 1000) ** 2 / 4 ))
             return (a_s1, n_s1, a_s2, n_s2, remark), remark
         else: # the compression zone does NOT extends below the plate
             print('the compression zone does NOT extends below the plate')

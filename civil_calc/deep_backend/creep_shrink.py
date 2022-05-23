@@ -165,7 +165,7 @@ class CreepShrink():
         kh = self.kh(self.h0)
         eps_cd_t = beta_ds_t_ts * kh * eps_cd_0
         return eps_cd_t
-    
+
     # odkształcenia od skurczu autogenicznego
 
     def eps_ca_inf(self):
@@ -173,7 +173,7 @@ class CreepShrink():
         EN1992-1-1 equation 3.11"""
         eps_ca_inf = 2.5 * (self.fck - 10) * 10 ** -6
         return eps_ca_inf
-    
+
     def eps_ca_t(self, t):
         """returns autogenous shrinkage strain at given time
         EN1992-1-1 equation 3.12"""
@@ -181,12 +181,13 @@ class CreepShrink():
         beta_as_t = 1 - math.e ** (-0.2 * t ** 0.5)
         eps_ca = eps_ca_inf * beta_as_t
         return eps_ca
-    
+
     # całkowite odkształcenie skurczowe 
     
     def eps_cs_t(self, t):
         """total shrinkage strain εcs is composed
-        from the drying shrinkage strain εcd and the autogenous shrinkage strain 
+        from the drying shrinkage strain εcd and 
+        the autogenous shrinkage strain 
         εc as specified in EN1992-1-1 eq. 3.8:"""
         eps_ca_t = self.eps_ca_t(t)
         eps_cd_t = self.eps_cd_t(t)
@@ -249,8 +250,10 @@ def main():
     fig0, ax0 = plt.subplots()
     fig0.set_size_inches(9, 6)
     ax1 = ax0.twinx()
-    pp1 = ax0.plot(time_arr, creep_arr, label='Creep coef. development curvee')
-    pp2 = ax1.plot(time_arr, shrink_arr*100000, label='Shrinkage development curve [x10^-5]', color='orange')
+    pp1 = ax0.plot(time_arr, creep_arr, 
+                   label='Creep coef. development curve')
+    pp2 = ax1.plot(time_arr, shrink_arr*100000, 
+                   label='Shrinkage development curve [x10^-5]', color='orange')
     pp = pp1 + pp2
     ax0.set_title('Creep and shrinkage development curves')
     ax0.xaxis.grid(True, which='major')
@@ -258,12 +261,15 @@ def main():
     ax0.set_xlabel('Time [days]', fontsize=15)
     ax0.set_ylabel('Creep coeff. [-]', fontsize=15)
     ax1.set_ylabel('Shrinkage strain x10**-5 [-]', fontsize=15)
-    #plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=2, fontsize=10)
+    #plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), 
+    # fancybox=True, shadow=True, ncol=2, fontsize=10)
     labs = [l.get_label() for l in pp]
-    ax0.legend(pp, labs, loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=2, fontsize=13)
+    ax0.legend(pp, labs, loc='upper center', bbox_to_anchor=(0.5, -0.05), 
+               fancybox=True, shadow=True, ncol=2, fontsize=13)
     ax0.tick_params(labelsize=15)
     ax1.tick_params(labelsize=15)
     plt.show()
+
     
 if __name__ == '__main__':
     main()

@@ -1,5 +1,5 @@
 """
-sources of knoweladge
+sources of knowledge
 knauf
 łapko jensen
 pietryga
@@ -16,8 +16,8 @@ from . t_sect_ben_reinf import TCrReinf
 from . char_geom import CharGeom
 
 class GeneralAxBend(TCrReinf):
-    """cross section axial force + bending moment capasity computations;
-    returns stresses in conrete and steel layers according to computed itaratively
+    """cross section axial force + bending moment capacity computations;
+    returns stresses in conrete and steel layers according to computed iteratively
     (gradient descent) epsilon and fi (strain and rotation of cross section) 
     to achive close resulting M and N as M_sd and N_sd
     [compression is denoted by plus sign]"""
@@ -30,7 +30,7 @@ class GeneralAxBend(TCrReinf):
     E_EK_TENDONS = 0.010  # max. strain in the steel of the tendons
     R_K_TENDONS = 1860  # [MPa] characteristic strength of steel of the tendons
     EPS_INIT = 0.001 * 10 ** -2
-    EPS_T_INIT = - 0.70 * R_K_TENDONS / E_TENDONS  # inital linear strain in tednon due to inital stressing force (uwględniono straty trwałe? lub nie)
+    EPS_T_INIT = - 0.70 * R_K_TENDONS / E_TENDONS  # initial linear strain in tednon due to initial stressing force (uwględniono straty trwałe? lub nie)
     N_CONC_LAYERS = 30  # number of layers of virtual division of the concrete cross-section for the needs of numerical integrals
     CONC_L_THIC = 0.005 # concrete layer thickness of virtual division of the concrete cross-section for the needs of numerical integrals
     ETA = 0.9 # learning rate
