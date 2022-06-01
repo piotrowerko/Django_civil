@@ -46,13 +46,18 @@ class GeneralAxBend(TCrReinf):
         self.n_sd = n_sd
         char_geom = CharGeom()
         #self.e_vert = char_geom.find_center_m((b[2], h[2], b[1], h[1], b[0], h[0]))[0]  # = sefl.h_bottom
-        self.e_vert = char_geom.find_center_m((b[0], h[0], b[1], h[1], b[2], h[2]))[0]  # = sefl.h_bottom
+        _aa = (b[0], h[0], b[1], h[1], b[2], h[2])
+        ex, areas, tot_area = char_geom.find_center_m(_aa)
+        self.e_vert = ex  # = sefl.h_bottom
         self.h_top = sum(self.h) - self.e_vert
         self.nl_reinf_top = nl_reinf_top
         self.nl_reinf_bottom = nl_reinf_bottom
         self.fi_init = GeneralAxBend.EPS_INIT / max(self.e_vert, self.h_top)
         self.tendon_info = tendon_info
         self.prestr_ef_in_mn = prestr_ef_in_mn
+        if __name__ != '__main__':
+            self.area = tot_area
+            self.i_cs = char_geom.mom_of_int_bend(_aa)
 
     @classmethod
     def alter_constr(self):
@@ -181,7 +186,7 @@ class GeneralAxBend(TCrReinf):
         return strain_tendon, t_heights, t_areas
 
     def _stress_strain_steel(self, strain_steel=0.0):
-        """returns stress-strain relationsip in steel"""
+        """returns stress-strain relationship in steel"""
         #k = self.cl_steel_data[6]
         e_uk = self.cl_steel_data[5]
         e_ud = e_uk / 1.15
@@ -205,7 +210,7 @@ class GeneralAxBend(TCrReinf):
         return sigma_steel, e_ud
     
     def _stress_strain_tendons(self, strain_tendon=0.0):
-        """returns stress-strain relationsip in in the steel of the tendons"""
+        """returns stress-strain relationship in in the steel of the tendons"""
         e_uk = GeneralAxBend.E_EK_TENDONS
         e_ud = e_uk / 1.00
         #f_yk = GeneralAxBend.R_K_TENDONS

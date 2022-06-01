@@ -21,6 +21,10 @@ class CreepShrink():
         self.h0 = 1000 * 2 * ac / u
         self.fcm = self.get_fc(csv_row=4)
         self.fck = self.get_fc(csv_row=1)
+        self.e_cm = self.get_fc(csv_row=9)
+        
+    def __str__(self) -> str:
+        return f'my name is {self.name}, my conc. class is {self.cl_conc}'
     
     #@property
     def get_fc(self, csv_row=4):
