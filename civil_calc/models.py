@@ -41,6 +41,6 @@ class JsonUserQuery(models.Model):
 def pre_save_json_receiever(sender, instance, *args, **kwargs):
     """cerates a url slug, before json query is saved"""
     if not instance.slug:
-        instance.slug = slugify(instance.owner.username + "-" + instance.date_added)
+        instance.slug = slugify(instance.owner.username + "-" + instance.title)
 
 pre_save.connect(pre_save_json_receiever, sender=JsonUserQuery)

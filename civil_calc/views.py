@@ -1,3 +1,4 @@
+from rest_framework import status
 from django.shortcuts import render
 
 from django.http import JsonResponse
@@ -6,7 +7,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import viewsets
 
-from civil_calc.models import Simple_c_calc, JsonUserQuery
+from .models import Simple_c_calc, JsonUserQuery
 from .serializers import Simple_c_calcSerializer, JsonUserQuerySerializer
 
 import json
@@ -188,30 +189,17 @@ def show_json_user_query(request, slug):
 
 
 @api_view(['POST'])
-@permission_classes((IsAuthenticated,))
-def save_json_user_query(request):
+@permission_classes((IsAuthenticated, ))
+def save_jsonquery_view(request):
+
+    json_query = JsonUserQuery(owner=request.user)
 
     if request.method == 'POST':
-
-        data = request.data
-        data['owner'] = request.user.pk
-        serializer = JsonUserQuerySerializer(data=data)
-
+        serializer = JsonUserQuerySerializer(json_query, data=request.data)
         data = {}
         if serializer.is_valid():
-            blog_post = serializer.save()
-            data['response'] = CREATE_SUCCESS
-            data['pk'] = blog_post.pk
-            data['title'] = blog_post.title
-            data['body'] = blog_post.body
-            data['slug'] = blog_post.slug
-            data['date_updated'] = blog_post.date_updated
-            image_url = str(request.build_absolute_uri(blog_post.image.url))
-            if "?" in image_url:
-                image_url = image_url[:image_url.rfind("?")]
-            data['image'] = image_url
-            data['username'] = blog_post.author.username
-            return Response(data=data)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
