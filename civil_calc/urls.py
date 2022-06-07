@@ -16,6 +16,8 @@
 from django.urls import include, path
 from . import views
 
+app_name = 'civil_calc'
+
 urlpatterns = [
   path('', views.welcome),
   path('welcome', views.welcome),
@@ -25,5 +27,6 @@ urlpatterns = [
   path('rect_sing_reinf', views.rect_reinf),
   path('rect_double_reinf', views.rect_double_reinf),
   path('rect_find_reinf', views.rect_find_reinf),
-  path('t_sect_ben_reinf', views.t_sect_ben_reinf)
+  path('t_sect_ben_reinf', views.t_sect_ben_reinf),
+  path('<slug>/', views.show_json_user_query, name="detail"),
 ]

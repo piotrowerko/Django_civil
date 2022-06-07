@@ -77,3 +77,38 @@ Hi, awesome tutorial, but in the case of the 'DEFAULT_PERMISSION_CLASSES', this 
 the 'IsAuthenticated' permission in it, you dont have to manually add it to all your views again like u were doing with the @permission_classes decorator.
 
 py -m civil_calc.deep_backend.rect_double_reinf
+
+wyjaśnienie serializerów:
+https://www.youtube.com/watch?v=uzO2PW5jNMk&list=PLgCYzUzKIBE9Pi8wtx8g55fExDAPXBsbV&index=3
+(one "rozpakowują i pakują dane do bazy danych - ale czemu standardowe django tego nie potrzebuje
+- BO MA FORMULARZE, CO JEST TYM SAMYM")
+
+Twoja obsługa userów przez api już jest odpowiedzią na twoje pytania:
+1. model (mapuje tabele sql)
+2. serilizer importuje model i definiuje
+
+https://djangobook.com/django-tutorials/mastering-django-models/
+
+json field:
+https://www.tutorialspoint.com/adding-json-field-in-django-models
+
+modele z konktami urzytkowników:
+https://github.com/mitchtabian/CodingWithMitchBlog-REST-API/blob/master/src/blog/models.py
+
+model blogu wyjaśniony:
+https://www.youtube.com/watch?v=GcqURKYfv00&list=PLgCYzUzKIBE_dil025VAJnDjNZHHHR9mW&index=21
+https://github.com/mitchtabian/CodingWithMitchBlog-REST-API/blob/master/src/blog/models.py
+
+To create initial migrations for an app, run makemigrations and specify the app name. The migrations folder will be created.
+./manage.py makemigrations <myapp>
+
+Try deleting your migration file(s) and then rerun python manage.py makemigrations and python manage.py migrate afresh.
+
+python manage.py migrate --fake <appname>
+
+Reset the SQLite3 Database in Django
+
+    Delete the db. sqlite3 file. ...
+    Delete all the migrations folder inside all the Django applications.
+    Make migrations for all the Django applications using the python manage.py makemigrations command. ...
+    Lastly, migrate the migrations using this command: python manage.py migrate .

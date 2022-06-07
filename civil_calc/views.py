@@ -6,8 +6,8 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import viewsets
 
-from civil_calc.models import Simple_c_calc
-from .serializers import Simple_c_calcSerializer
+from civil_calc.models import Simple_c_calc, JsonUserQuery
+from .serializers import Simple_c_calcSerializer, JsonUserQuerySerializer
 
 import json
 
@@ -173,6 +173,46 @@ def t_sect_ben_reinf(request):
         return JsonResponse(_ee)
     return JsonResponse({"message": "No data received!"})
 
+@api_view(['GET', ])
+@permission_classes((IsAuthenticated, ))
+def show_json_user_query(request, slug):
+    """shows specific json user query"""
+    try:
+        json_user_query = JsonUserQuery.objects.get(slug=slug)
+    except JsonUserQuery.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = JsonUserQuerySerializer(json_user_query)
+        return Response(serializer.data)
+
+
+@api_view(['POST'])
+@permission_classes((IsAuthenticated,))
+def save_json_user_query(request):
+
+    if request.method == 'POST':
+
+        data = request.data
+        data['owner'] = request.user.pk
+        serializer = JsonUserQuerySerializer(data=data)
+
+        data = {}
+        if serializer.is_valid():
+            blog_post = serializer.save()
+            data['response'] = CREATE_SUCCESS
+            data['pk'] = blog_post.pk
+            data['title'] = blog_post.title
+            data['body'] = blog_post.body
+            data['slug'] = blog_post.slug
+            data['date_updated'] = blog_post.date_updated
+            image_url = str(request.build_absolute_uri(blog_post.image.url))
+            if "?" in image_url:
+                image_url = image_url[:image_url.rfind("?")]
+            data['image'] = image_url
+            data['username'] = blog_post.author.username
+            return Response(data=data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 # class Simple_c_calcViewSet(viewsets.ModelViewSet):
