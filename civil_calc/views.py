@@ -1,17 +1,18 @@
-from rest_framework import status
-from django.shortcuts import render
+import json
 
+from rest_framework import status
 from django.http import JsonResponse
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import viewsets
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.generics import ListAPIView
+from rest_framework.filters import SearchFilter, OrderingFilter
 
 from .models import Simple_c_calc, JsonUserQuery
 from .serializers import Simple_c_calcSerializer, JsonUserQuerySerializer
-
-import json
-
 
 from .deep_backend.calc_pio2 import CalcPio2
 from .deep_backend.rect_single_reinf import RectCrSectSingle
@@ -191,7 +192,7 @@ def show_json_user_query(request, slug):
 @api_view(['POST'])
 @permission_classes((IsAuthenticated, ))
 def save_jsonquery_view(request):
-
+    """saves defined json to the database"""
     json_query = JsonUserQuery(owner=request.user)
 
     if request.method == 'POST':
@@ -201,6 +202,24 @@ def save_jsonquery_view(request):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class JsonInputsListView(ListAPIView):
+    """
+    https://www.youtube.com/watch?v=O79lhytiKd0&list=PLgCYzUzKIBE9Pi8wtx8g55fExDAPXBsbV&index=10
+    https://www.youtube.com/watch?v=F0tfRtBEkck&list=PLgCYzUzKIBE9Pi8wtx8g55fExDAPXBsbV&index=11
+    """
+    queryset = JsonUserQuery.objects.all()
+    serializer_class = JsonUserQuerySerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    pagination_class = PageNumberPagination
+    filter_backends = (SearchFilter, OrderingFilter)
+    search_fields = ('title', 'the_json', 'owner__username')
+
+
+
+
+
 
 
 # class Simple_c_calcViewSet(viewsets.ModelViewSet):

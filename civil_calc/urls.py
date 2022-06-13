@@ -15,6 +15,7 @@
 
 from django.urls import include, path
 from . import views
+from .views import JsonInputsListView
 
 app_name = 'civil_calc'
 
@@ -30,4 +31,5 @@ urlpatterns = [
   path('t_sect_ben_reinf', views.t_sect_ben_reinf),
   path('<slug>/', views.show_json_user_query, name="detail"),
   path('save_json', views.save_jsonquery_view, name="save_json"),
+  path('list', JsonInputsListView.as_view(), name="list"),
 ]
