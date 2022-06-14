@@ -92,7 +92,7 @@ https://djangobook.com/django-tutorials/mastering-django-models/
 json field:
 https://www.tutorialspoint.com/adding-json-field-in-django-models
 
-modele z konktami urzytkowników:
+modele z kontami użytkowników:
 https://github.com/mitchtabian/CodingWithMitchBlog-REST-API/blob/master/src/blog/models.py
 
 model blogu wyjaśniony:
