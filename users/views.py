@@ -9,6 +9,7 @@ from .serializers import RegistrationSerializer, AccountPropertiesSerializer # f
 from rest_framework.authtoken.models import Token
 
 @api_view(['POST', ])
+@permission_classes(())
 def registration_view(request):
 
     if request.method == 'POST':

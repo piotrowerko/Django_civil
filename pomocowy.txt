@@ -112,3 +112,12 @@ Reset the SQLite3 Database in Django
     Delete all the migrations folder inside all the Django applications.
     Make migrations for all the Django applications using the python manage.py makemigrations command. ...
     Lastly, migrate the migrations using this command: python manage.py migrate .
+
+
+Ives Furtado
+1 year ago
+Hi, awesome tutorial, but in the case of the 'DEFAULT_PERMISSION_CLASSES', this sets global permissions to every view, so once you've 
+put the 'IsAuthenticated' permission in it, you dont have to manually add it to all your views again like u were doing with the @permission_classes decorator.
+karam farhan
+6 months ago
+thank you for the comment I was searching for 3 hours about the problem then I saw your comment and I solved the problem
