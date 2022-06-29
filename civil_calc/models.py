@@ -31,7 +31,8 @@ class Simple_c_calc(models.Model):
 class JsonUserQuery(models.Model):
     """zmapowana tabela sql dotycząca jsonów podanych przez userów LUB ADMINA"""
     title = models.CharField(max_length=100, null=False, blank=True)
-    the_json = jsonfield.JSONField()
+    #the_json = jsonfield.JSONField()
+    the_json = models.JSONField()
     date_added = models.DateTimeField(auto_now_add=True)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     slug = models.SlugField(blank=True, unique=True)

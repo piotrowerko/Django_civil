@@ -35,15 +35,35 @@ def welcome(request):
 @api_view(["GET", "POST"])
 def sum_data(request):
     if request.method == 'POST':
-        pp = request.body
         cc = request.data
         dd = cc["first_number"] + cc["second_number"]
         ee = {'sum': dd}
         return JsonResponse(ee)  #, safe=False)
     return JsonResponse({"message": "No data received!"})
 
+
+@api_view(["POST"])
+@permission_classes((IsAuthenticated, ))
+def sum_data_and_save(request):
+    """saves json body post to db and returns sum of two numbers"""
+    aa = 1
+    json_query = JsonUserQuery(owner=request.user)
+    if request.method == 'POST':
+        data=request.data
+        serializer = JsonUserQuerySerializer(json_query, data=data)
+        data = {}
+        if serializer.is_valid():
+            dd = serializer.initial_data["the_json"]["first_number"] + serializer.initial_data["the_json"]["second_number"]
+            ee = {'sum': dd}
+            serializer.save()
+            return Response(ee, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+
 @api_view(["GET", "POST"])
 def comp_data(request):
+    aa = 1
     if request.method == 'POST':
         cc = request.data
         inst_Calc = CalcPio2()
@@ -196,6 +216,7 @@ def save_jsonquery_view(request):
     json_query = JsonUserQuery(owner=request.user)
 
     if request.method == 'POST':
+        
         serializer = JsonUserQuerySerializer(json_query, data=request.data)
         data = {}
         if serializer.is_valid():
@@ -217,6 +238,45 @@ class JsonInputsListView(ListAPIView):
     search_fields = ('title', 'the_json', 'owner__username')
 
 
+# @api_view(['GET',])
+# @permission_classes((IsAuthenticated,))
+# def api_is_author_of_blogpost(request, slug):
+#     try:
+#         blog_post = BlogPost.objects.get(slug=slug)
+#     except BlogPost.DoesNotExist:
+#         return Response(status=status.HTTP_404_NOT_FOUND)
+
+#     data = {}
+#     user = request.user
+#     if blog_post.author != user:
+#         data['response'] = "You don't have permission to edit that."
+#         return Response(data=data)
+#     data['response'] = "You have permission to edit that."
+#     return Response(data=data)
+
+
+# # Response: https://gist.github.com/mitchtabian/a97be3f8b71c75d588e23b414898ae5c
+# # Url: https://<your-domain>/api/blog/<slug>/delete
+# # Headers: Authorization: Token <token>
+# @api_view(['DELETE',])
+# @permission_classes((IsAuthenticated, ))
+# def api_delete_blog_view(request, slug):
+
+#     try:
+#         blog_post = BlogPost.objects.get(slug=slug)
+#     except BlogPost.DoesNotExist:
+#         return Response(status=status.HTTP_404_NOT_FOUND)
+
+#     user = request.user
+#     if blog_post.author != user:
+#         return Response({'response':"You don't have permission to delete that."}) 
+
+#     if request.method == 'DELETE':
+#         operation = blog_post.delete()
+#         data = {}
+#         if operation:
+#             data['response'] = DELETE_SUCCESS
+#         return Response(data=data)
 
 
 

@@ -11,10 +11,11 @@ class Simple_c_calcSerializer(serializers.HyperlinkedModelSerializer):
 class JsonUserQuerySerializer(serializers.ModelSerializer):
     
     username = serializers.SerializerMethodField('get_username_from_owner')
+    the_json = serializers.JSONField()
     
     class Meta:
         model = JsonUserQuery
-        fields = ['title', 'the_json', 'date_added', 'username', 'slug']
+        fields = ['pk', 'title', 'the_json', 'date_added', 'username', 'slug']
     
     def get_username_from_owner(self, JsonUserQuery):
         username = JsonUserQuery.owner.username

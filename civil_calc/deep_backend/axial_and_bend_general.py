@@ -331,8 +331,13 @@ class GeneralAxBend(TCrReinf):
         n_new = 0
         m_new = 0
         for i in range(n_it):
-            eps_new, fi_new, n_new, m_new = self._update_eps_and_fi(eps_cur=eps_new, fi_cur=fi_new, n_cur=n_new, m_cur=m_new, 
-                                                                    conc_geom=conc_geom, reinf_geom=reinf_geom, tend_geom=tend_geom)
+            eps_new, fi_new, n_new, m_new = self._update_eps_and_fi(eps_cur=eps_new, 
+                                                                    fi_cur=fi_new, 
+                                                                    n_cur=n_new, 
+                                                                    m_cur=m_new, 
+                                                                    conc_geom=conc_geom, 
+                                                                    reinf_geom=reinf_geom, 
+                                                                    tend_geom=tend_geom)
             print(n_new, m_new, i, eps_new, fi_new)
             ## if abs(eps_new) > 0.1 or abs(fi_new) > 0.1:
             ##     eps_new = np.random.uniform(-0.001, 0.001)

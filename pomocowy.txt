@@ -121,3 +121,13 @@ put the 'IsAuthenticated' permission in it, you dont have to manually add it to 
 karam farhan
 6 months ago
 thank you for the comment I was searching for 3 hours about the problem then I saw your comment and I solved the problem
+
+
+DEBUGOWANIE VSCODE DJANGO:
+
+1. ustaw debugger na opcję django
+2. ustaw pkt zatrzymania np. wewnątrz wybranego widoku
+3. Uruchom debugger - powinien ruchyć server django
+4. Uruchom wywłlanie widoku z poziomu thunder client lub POSTMAN
+5. Debuger powinien się zatrzymać na wybranej linii kodu
+6. JEŻELI NIE DZIAŁA ZRESTARTUJ VSCODE

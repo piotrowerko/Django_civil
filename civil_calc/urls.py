@@ -23,6 +23,7 @@ urlpatterns = [
   path('', views.welcome),
   path('welcome', views.welcome),
   path('sum_data', views.sum_data),
+  path('sum_data_and_save', views.sum_data_and_save),
   path('comp_data', views.comp_data),
   path('comp_data_three', views.comp_data_three),
   path('rect_sing_reinf', views.rect_reinf),
