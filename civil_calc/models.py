@@ -45,3 +45,16 @@ def pre_save_json_receiever(sender, instance, *args, **kwargs):
         instance.slug = slugify(instance.owner.username + "-" + instance.title)
 
 pre_save.connect(pre_save_json_receiever, sender=JsonUserQuery)
+
+
+class JsonRectReinf(models.Model):
+    """zmapowana tabela sql dotycząca jsonów podanych przez userów LUB ADMINA"""
+    title = models.CharField(max_length=100, null=False, blank=True)
+    the_input_json = models.JSONField()
+    date_added = models.DateTimeField(auto_now_add=True)
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    slug = models.SlugField(blank=True, unique=True)
+    def __str__(self):
+        return f'this is a json query made by: {self.owner} on date: {self.date_added}'
+    
+pre_save.connect(pre_save_json_receiever, sender=JsonUserQuery)

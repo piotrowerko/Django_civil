@@ -11,7 +11,7 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.generics import ListAPIView
 from rest_framework.filters import SearchFilter, OrderingFilter
 
-from .models import Simple_c_calc, JsonUserQuery
+from .models import Simple_c_calc, JsonUserQuery, JsonRectReinf
 from .serializers import Simple_c_calcSerializer, JsonUserQuerySerializer
 
 from .deep_backend.calc_pio2 import CalcPio2
@@ -46,24 +46,23 @@ def sum_data(request):
 @permission_classes((IsAuthenticated, ))
 def sum_data_and_save(request):
     """saves json body post to db and returns sum of two numbers"""
-    aa = 1
     json_query = JsonUserQuery(owner=request.user)
     if request.method == 'POST':
         data=request.data
         serializer = JsonUserQuerySerializer(json_query, data=data)
         data = {}
         if serializer.is_valid():
-            dd = serializer.initial_data["the_json"]["first_number"] + serializer.initial_data["the_json"]["second_number"]
+            dd = serializer.initial_data["the_json"]["first_number"] \
+                + serializer.initial_data["the_json"]["second_number"]
             ee = {'sum': dd}
             serializer.save()
             return Response(ee, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_201_CREATED)
     
 
 
 @api_view(["GET", "POST"])
 def comp_data(request):
-    aa = 1
     if request.method == 'POST':
         cc = request.data
         inst_Calc = CalcPio2()
@@ -93,6 +92,37 @@ def rect_reinf(request):
             }
         return JsonResponse(_ee)
     return JsonResponse({"message": "No data received!"})
+
+@api_view(["GET", "POST"])
+@permission_classes((IsAuthenticated, ))
+def rect_reinf_with_save(request):
+    """returns json with load capasity of member 
+    and saves to db the initial sjon from post req."""
+    json_query = JsonRectReinf(owner=request.user)
+    if request.method == 'POST':
+        cc = request.data
+        serializer = JsonUserQuerySerializer(json_query, data=cc)
+        cc = {}
+        if serializer.is_valid():
+            cc = serializer.initial_data['the_input_json']
+            my_cross_sect = RectCrSectSingle(name=cc['name'],
+                                    b=cc['b'],
+                                    h=cc['h'],
+                                    cl_conc=cc['cl_conc'],
+                                    cl_steel=cc['cl_steel'],
+                                    c=cc['c'],
+                                    fi=cc['fi'],
+                                    no_of_bars=cc['no_of_bars'],
+                                    fi_s=cc['fi_s'])
+            _dd = my_cross_sect.compute_m_rd_single_r()
+            _ee = {
+                'm_rd': _dd[0],  # nośność przekroju na zginanie
+                'ksi_eff': _dd[1],  # względne położenie osi obojętnej przekroju
+                'x_eff': _dd[2],  # wysokość strefy ściskanej
+                }
+            serializer.save()
+            return Response(_ee, status=status.HTTP_201_CREATED)
+        return Response(status=status.HTTP_201_CREATED)
 
 @api_view(["GET", "POST"])
 @permission_classes((IsAuthenticated, ))
@@ -224,18 +254,59 @@ def save_jsonquery_view(request):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+# class JsonInputsListView_(ListAPIView):
+#     """
+#     https://www.youtube.com/watch?v=O79lhytiKd0&list=PLgCYzUzKIBE9Pi8wtx8g55fExDAPXBsbV&index=10
+#     https://www.youtube.com/watch?v=F0tfRtBEkck&list=PLgCYzUzKIBE9Pi8wtx8g55fExDAPXBsbV&index=11
+#     """
+#     queryset = JsonUserQuery.objects.all()
+#     serializer_class = JsonUserQuerySerializer
+#     authentication_classes = (TokenAuthentication,)
+#     permission_classes = (IsAuthenticated,)
+#     pagination_class = PageNumberPagination
+#     filter_backends = (SearchFilter, OrderingFilter)
+#     search_fields = ('title', 'the_json', 'owner__username')
+    
+
+
+
 class JsonInputsListView(ListAPIView):
-    """
-    https://www.youtube.com/watch?v=O79lhytiKd0&list=PLgCYzUzKIBE9Pi8wtx8g55fExDAPXBsbV&index=10
-    https://www.youtube.com/watch?v=F0tfRtBEkck&list=PLgCYzUzKIBE9Pi8wtx8g55fExDAPXBsbV&index=11
-    """
-    queryset = JsonUserQuery.objects.all()
+    #queryset = JsonUserQuery.objects.all()
     serializer_class = JsonUserQuerySerializer
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
     pagination_class = PageNumberPagination
     filter_backends = (SearchFilter, OrderingFilter)
     search_fields = ('title', 'the_json', 'owner__username')
+    
+    def get_queryset(self):
+        if self.request.user.is_admin:
+        #if self.request.user.is_staff:    
+            return JsonUserQuery.objects.all()
+        return JsonUserQuery.objects.all().filter(owner=self.request.user)
+
+#     def get_permissions(self):
+#         if self.action == 'list':
+#             self.permission_classes = [IsSuperUser, ]
+#         elif self.action == 'retrieve':
+#             self.permission_classes = [IsOwner]
+#         return super(self.__class__, self).get_permissions()
+
+# class IsSuperUser(BasePermission):
+
+#     def has_permission(self, request, view):
+#         return request.user and request.user.is_superuser
+
+# class IsOwner(permissions.BasePermission):
+
+#     def has_object_permission(self, request, view, obj):
+#         if request.user:
+#             if request.user.is_superuser:
+#                 return True
+#             else:
+#                 return obj.owner == request.user
+#         else:
+#             return False
 
 
 # @api_view(['GET',])
