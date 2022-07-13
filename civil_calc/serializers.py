@@ -16,22 +16,22 @@ class JsonUserQuerySerializer(serializers.ModelSerializer):
     class Meta:
         model = JsonUserQuery
         fields = ['pk', 'title', 'the_json', 'date_added', 'username', 'slug']
-    
+
     def get_username_from_owner(self, JsonUserQuery):
         username = JsonUserQuery.owner.username
         return username
 
 class JsonRectReinfSerializer(serializers.ModelSerializer):
-    
+
     username = serializers.SerializerMethodField('get_username_from_owner')
     the_input_json = serializers.JSONField()
-    
+
     class Meta:
         model = JsonRectReinf
-        fields = ['title', 'the_input_json', 'date_added', 'username', 'slug']
-    
-    def get_username_from_owner(self, JsonUserQuery):
-        username = JsonUserQuery.owner.username
+        fields = ['pk', 'title', 'the_input_json', 'date_added', 'username', 'slug']
+
+    def get_username_from_owner(self, JsonRectReinf):
+        username = JsonRectReinf.owner.username
         return username
     
     

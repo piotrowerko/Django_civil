@@ -63,6 +63,11 @@ https://github.com/mitchtabian/CodingWithMitchBlog-REST-API/tree/Generating-Auth
 
 https://github.com/mitchtabian/CodingWithMitchBlog-REST-API/tree/Restricting-Access-with-Permissions-(Django-Rest-framework)/src
 
+py manage.py makemigrations civil_calc
+py manage.py makemigrations users
+
+already exists error:
+python manage.py migrate --fake civil_calc
 
 problem z aktualizacją SQL:
 python manage.py makemigrations

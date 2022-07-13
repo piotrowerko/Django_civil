@@ -57,4 +57,4 @@ class JsonRectReinf(models.Model):
     def __str__(self):
         return f'this is a json query made by: {self.owner} on date: {self.date_added}'
     
-pre_save.connect(pre_save_json_receiever, sender=JsonUserQuery)
+pre_save.connect(pre_save_json_receiever, sender=JsonRectReinf)

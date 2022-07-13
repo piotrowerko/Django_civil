@@ -12,7 +12,7 @@ from rest_framework.generics import ListAPIView
 from rest_framework.filters import SearchFilter, OrderingFilter
 
 from .models import Simple_c_calc, JsonUserQuery, JsonRectReinf
-from .serializers import Simple_c_calcSerializer, JsonUserQuerySerializer
+from .serializers import Simple_c_calcSerializer, JsonUserQuerySerializer, JsonRectReinfSerializer
 
 from .deep_backend.calc_pio2 import CalcPio2
 from .deep_backend.rect_single_reinf import RectCrSectSingle
@@ -60,7 +60,6 @@ def sum_data_and_save(request):
         return Response(status=status.HTTP_201_CREATED)
     
 
-
 @api_view(["GET", "POST"])
 def comp_data(request):
     if request.method == 'POST':
@@ -93,7 +92,7 @@ def rect_reinf(request):
         return JsonResponse(_ee)
     return JsonResponse({"message": "No data received!"})
 
-@api_view(["GET", "POST"])
+@api_view(["POST"])
 @permission_classes((IsAuthenticated, ))
 def rect_reinf_with_save(request):
     """returns json with load capasity of member 
@@ -101,19 +100,19 @@ def rect_reinf_with_save(request):
     json_query = JsonRectReinf(owner=request.user)
     if request.method == 'POST':
         cc = request.data
-        serializer = JsonUserQuerySerializer(json_query, data=cc)
+        serializer = JsonRectReinfSerializer(json_query, data=cc)
         cc = {}
         if serializer.is_valid():
-            cc = serializer.initial_data['the_input_json']
-            my_cross_sect = RectCrSectSingle(name=cc['name'],
-                                    b=cc['b'],
-                                    h=cc['h'],
-                                    cl_conc=cc['cl_conc'],
-                                    cl_steel=cc['cl_steel'],
-                                    c=cc['c'],
-                                    fi=cc['fi'],
-                                    no_of_bars=cc['no_of_bars'],
-                                    fi_s=cc['fi_s'])
+            dd = serializer.initial_data['the_input_json']
+            my_cross_sect = RectCrSectSingle(name=dd['name'],
+                                    b=dd['b'],
+                                    h=dd['h'],
+                                    cl_conc=dd['cl_conc'],
+                                    cl_steel=dd['cl_steel'],
+                                    c=dd['c'],
+                                    fi=dd['fi'],
+                                    no_of_bars=dd['no_of_bars'],
+                                    fi_s=dd['fi_s'])
             _dd = my_cross_sect.compute_m_rd_single_r()
             _ee = {
                 'm_rd': _dd[0],  # nośność przekroju na zginanie
